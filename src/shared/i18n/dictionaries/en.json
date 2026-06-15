@@ -123,6 +123,17 @@
     "moveTo": "move to",
     "priorityChange": "new priority"
   },
+  "notFound": {
+    "title": "404",
+    "message": "This page could not be found.",
+    "backHome": "Back home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try again.",
+    "retry": "Try again",
+    "backHome": "Back home"
+  },
   "errors": {
     "UNAUTHORIZED": "You need to be logged in.",
     "VALIDATION": "Please check the highlighted fields.",
@@ -134,6 +145,7 @@
     "USER_NOT_FOUND": "No user found with this email.",
     "ALREADY_MEMBER": "This user is already a member of this board.",
     "INCORRECT_PASSWORD": "Current password is incorrect.",
-    "AI_UNAVAILABLE": "AI Assist is currently unavailable. Please try again later."
+    "AI_UNAVAILABLE": "AI Assist is currently unavailable. Please try again later.",
+    "RATE_LIMITED": "Too many attempts. Please try again later."
   }
 }

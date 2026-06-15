@@ -5,14 +5,23 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { createSession } from "@/shared/lib/auth/session";
+import { checkRateLimit, getClientIp } from "@/shared/lib/auth/rate-limit";
 import { ErrorCode, err } from "@/shared/lib/actions/result";
 import { routes } from "@/shared/lib/routing/routes";
 import { loginSchema } from "@/features/auth/schema/auth-schema";
+
+const LOGIN_LIMIT = 5;
+const LOGIN_WINDOW_MS = 10 * 60 * 1000;
 
 export const login = runAction({
   schema: loginSchema,
   requireAuth: false,
   handler: async ({ email, password }) => {
+    const ip = await getClientIp();
+    if (!checkRateLimit(`login:${ip}:${email}`, LOGIN_LIMIT, LOGIN_WINDOW_MS)) {
+      return err(ErrorCode.RATE_LIMITED);
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
       select: { id: true, passwordHash: true },

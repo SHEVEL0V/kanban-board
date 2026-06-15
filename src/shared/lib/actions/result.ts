@@ -10,6 +10,7 @@ export const ErrorCode = {
   ALREADY_MEMBER: "ALREADY_MEMBER",
   INCORRECT_PASSWORD: "INCORRECT_PASSWORD",
   AI_UNAVAILABLE: "AI_UNAVAILABLE",
+  RATE_LIMITED: "RATE_LIMITED",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
