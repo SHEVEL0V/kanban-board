@@ -16,11 +16,17 @@ import { deleteBoard } from "@/features/boards/actions/delete-board";
 import { TitleDialog } from "@/shared/ui/components/title-dialog";
 import { ConfirmDialog } from "@/shared/ui/components/confirm-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import { routes } from "@/shared/lib/routes";
+import { routes } from "@/shared/lib/routing/routes";
 
-export function BoardCard({ board }: { board: { id: string; title: string } }) {
+export function BoardCard({
+  board,
+  isOwner,
+}: {
+  board: { id: string; title: string; owner: { name: string } };
+  isOwner: boolean;
+}) {
   const { dict } = useDictionary();
   const [isPending, startTransition] = useTransition();
   const [renameOpen, setRenameOpen] = React.useState(false);
@@ -33,19 +39,26 @@ export function BoardCard({ board }: { board: { id: string; title: string } }) {
         <Typography variant="h6" noWrap>
           {board.title}
         </Typography>
+        {!isOwner ? (
+          <Typography variant="caption" color="text.secondary">
+            {dict.boards.sharedBy.replace("{name}", board.owner.name)}
+          </Typography>
+        ) : null}
       </CardContent>
       <CardActions sx={{ justifyContent: "space-between" }}>
         <Button component={Link} href={routes.board(board.id)} size="small">
           {dict.boards.open}
         </Button>
-        <div>
-          <IconButton size="small" onClick={() => setRenameOpen(true)}>
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => setDeleteOpen(true)}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </div>
+        {isOwner ? (
+          <div>
+            <IconButton size="small" onClick={() => setRenameOpen(true)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton size="small" onClick={() => setDeleteOpen(true)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </div>
+        ) : null}
       </CardActions>
 
       <TitleDialog

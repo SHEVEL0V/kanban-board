@@ -2,8 +2,8 @@ import "server-only";
 
 import type { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { verifySession, type AuthenticatedSession } from "@/shared/lib/dal";
-import { ErrorCode, err, type Result } from "@/shared/lib/result";
+import { verifySession, type AuthenticatedSession } from "@/shared/lib/auth/dal";
+import { ErrorCode, err, type Result } from "@/shared/lib/actions/result";
 
 type AuthedConfig<TInput, TOutput> = {
   schema: z.ZodType<TInput>;

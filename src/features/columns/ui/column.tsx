@@ -13,24 +13,27 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useSortable } from "@dnd-kit/sortable";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Column as ColumnModel, Task } from "@/generated/prisma/client";
+import type { Column as ColumnModel } from "@/generated/prisma/client";
 import { updateColumn } from "@/features/columns/actions/update-column";
 import { deleteColumn } from "@/features/columns/actions/delete-column";
 import { TaskCard } from "@/features/tasks/ui/task-card";
 import { AddTaskButton } from "@/features/tasks/ui/add-task-button";
 import { taskMatchesFilters, type TaskFilters } from "@/features/columns/lib/task-filters";
+import type { TaskWithComments } from "@/features/boards/queries/get-board";
 import { ColumnSettingsDialog } from "@/features/columns/ui/column-settings-dialog";
 import { ConfirmDialog } from "@/shared/ui/components/confirm-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 export function Column({
   column,
   filters,
+  currentUserId,
 }: {
-  column: ColumnModel & { tasks: Task[] };
+  column: ColumnModel & { tasks: TaskWithComments[] };
   filters: TaskFilters;
+  currentUserId: string;
 }) {
   const { dict } = useDictionary();
   const [isPending, startTransition] = useTransition();
@@ -104,6 +107,7 @@ export function Column({
               key={task.id}
               task={task}
               boardId={column.boardId}
+              currentUserId={currentUserId}
               hidden={!taskMatchesFilters(task, filters)}
             />
           ))}

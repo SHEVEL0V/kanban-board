@@ -12,27 +12,30 @@ import {
   type DragOverEvent,
 } from "@dnd-kit/core";
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
-import type { Column as ColumnModel, Task } from "@/generated/prisma/client";
+import type { Column as ColumnModel } from "@/generated/prisma/client";
 import { Column } from "@/features/columns/ui/column";
 import { AddColumnButton } from "@/features/columns/ui/add-column-button";
-import { BoardFilters } from "@/features/columns/ui/board-filters";
-import { EMPTY_TASK_FILTERS } from "@/features/columns/lib/task-filters";
+import type { TaskFilters } from "@/features/columns/lib/task-filters";
+import type { TaskWithComments } from "@/features/boards/queries/get-board";
 import { reorderColumns } from "@/features/columns/actions/reorder-columns";
 import { moveTask } from "@/features/tasks/actions/move-task";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 
-type ColumnWithTasks = ColumnModel & { tasks: Task[] };
+export type ColumnWithTasks = ColumnModel & { tasks: TaskWithComments[] };
 
 export function ColumnList({
   boardId,
   columns: initialColumns,
+  filters,
+  currentUserId,
 }: {
   boardId: string;
   columns: ColumnWithTasks[];
+  filters: TaskFilters;
+  currentUserId: string;
 }) {
   const [columns, setColumns] = React.useState(initialColumns);
-  const [filters, setFilters] = React.useState(EMPTY_TASK_FILTERS);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const { error, run, clearError } = useActionFeedback();
 
@@ -124,23 +127,20 @@ export function ColumnList({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <Stack spacing={2}>
-        <BoardFilters filters={filters} onChangeAction={setFilters} />
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ overflowX: "auto", pb: 2, alignItems: "flex-start" }}
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ overflowX: "auto", pb: 2, alignItems: "flex-start" }}
+      >
+        <SortableContext
+          items={columns.map((column) => column.id)}
+          strategy={horizontalListSortingStrategy}
         >
-          <SortableContext
-            items={columns.map((column) => column.id)}
-            strategy={horizontalListSortingStrategy}
-          >
-            {columns.map((column) => (
-              <Column key={column.id} column={column} filters={filters} />
-            ))}
-          </SortableContext>
-          <AddColumnButton boardId={boardId} />
-        </Stack>
+          {columns.map((column) => (
+            <Column key={column.id} column={column} filters={filters} currentUserId={currentUserId} />
+          ))}
+        </SortableContext>
+        <AddColumnButton boardId={boardId} />
       </Stack>
 
       <ErrorSnackbar error={error} onCloseAction={clearError} />

@@ -11,10 +11,23 @@ import { createBoard } from "@/features/boards/actions/create-board";
 import { BoardCard } from "@/features/boards/ui/board-card";
 import { TitleDialog } from "@/shared/ui/components/title-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
-export function BoardList({ boards }: { boards: { id: string; title: string }[] }) {
+type BoardSummary = {
+  id: string;
+  title: string;
+  ownerId: string;
+  owner: { name: string };
+};
+
+export function BoardList({
+  boards,
+  currentUserId,
+}: {
+  boards: BoardSummary[];
+  currentUserId: string;
+}) {
   const { dict } = useDictionary();
   const [isPending, startTransition] = useTransition();
   const [createOpen, setCreateOpen] = React.useState(false);
@@ -42,7 +55,7 @@ export function BoardList({ boards }: { boards: { id: string; title: string }[] 
           }}
         >
           {boards.map((board) => (
-            <BoardCard key={board.id} board={board} />
+            <BoardCard key={board.id} board={board} isOwner={board.ownerId === currentUserId} />
           ))}
         </Box>
       )}

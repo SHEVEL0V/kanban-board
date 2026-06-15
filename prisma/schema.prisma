@@ -8,23 +8,40 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  boards       Board[]
-  createdAt    DateTime @default(now())
+  id               String        @id @default(cuid())
+  email            String        @unique
+  passwordHash     String
+  name             String
+  boards           Board[]
+  boardMemberships BoardMember[]
+  activities       Activity[]
+  comments         Comment[]
+  createdAt        DateTime      @default(now())
 }
 
 model Board {
-  id        String   @id @default(cuid())
-  title     String
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId   String
-  columns   Column[]
-  createdAt DateTime @default(now())
+  id         String        @id @default(cuid())
+  title      String
+  owner      User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String
+  columns    Column[]
+  members    BoardMember[]
+  activities Activity[]
+  createdAt  DateTime      @default(now())
 
   @@index([ownerId])
+}
+
+model BoardMember {
+  id        String   @id @default(cuid())
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([boardId, userId])
+  @@index([userId])
 }
 
 model Column {
@@ -54,7 +71,44 @@ model Task {
   order       Int
   column      Column       @relation(fields: [columnId], references: [id], onDelete: Cascade)
   columnId    String
+  comments    Comment[]
   createdAt   DateTime     @default(now())
 
   @@index([columnId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([taskId, createdAt])
+}
+
+enum ActivityAction {
+  CREATED
+  UPDATED
+  MOVED
+  DELETED
+}
+
+// Immutable per-board event log; not FK-linked to Task so entries survive
+// task deletion (taskTitle/fromColumn/toColumn are snapshots, not live refs).
+model Activity {
+  id         String         @id @default(cuid())
+  board      Board          @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId    String
+  actor      User           @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId    String
+  action     ActivityAction
+  taskTitle  String
+  fromColumn String?
+  toColumn   String?
+  createdAt  DateTime       @default(now())
+
+  @@index([boardId, createdAt])
 }

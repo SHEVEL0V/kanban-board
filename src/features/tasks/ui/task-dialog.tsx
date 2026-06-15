@@ -9,9 +9,12 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
 import { TaskPriority } from "@/generated/prisma/browser";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import { toDateInputValue } from "@/shared/lib/date";
+import { toDateInputValue } from "@/shared/lib/utils/date";
+import { CommentsSection } from "@/features/tasks/comments/ui/comments-section";
+import type { CommentWithAuthor } from "@/features/boards/queries/get-board";
 
 // Shared by task creation and editing — both need title + optional description.
 export function TaskDialog({
@@ -22,6 +25,7 @@ export function TaskDialog({
   defaultPriority = TaskPriority.MEDIUM,
   defaultDueDate = null,
   pending = false,
+  comments,
   onCloseAction,
   onSubmitAction,
 }: {
@@ -32,6 +36,7 @@ export function TaskDialog({
   defaultPriority?: TaskPriority;
   defaultDueDate?: Date | null;
   pending?: boolean;
+  comments?: { taskId: string; boardId: string; items: CommentWithAuthor[]; currentUserId: string };
   onCloseAction: () => void;
   onSubmitAction: (title: string, description: string, priority: TaskPriority, dueDate: Date | null) => void;
 }) {
@@ -100,6 +105,18 @@ export function TaskDialog({
               slotProps={{ inputLabel: { shrink: true } }}
             />
           </Stack>
+
+          {comments ? (
+            <>
+              <Divider />
+              <CommentsSection
+                taskId={comments.taskId}
+                boardId={comments.boardId}
+                comments={comments.items}
+                currentUserId={comments.currentUserId}
+              />
+            </>
+          ) : null}
         </Stack>
       </DialogContent>
       <DialogActions>

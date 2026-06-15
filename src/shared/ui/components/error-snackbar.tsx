@@ -2,7 +2,7 @@
 
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import type { ErrorCode } from "@/shared/lib/result";
+import type { ErrorCode } from "@/shared/lib/actions/result";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 export function ErrorSnackbar({

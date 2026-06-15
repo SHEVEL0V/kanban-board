@@ -12,7 +12,17 @@
     "boards": "Дошки",
     "logout": "Вийти",
     "toggleTheme": "Перемкнути тему",
-    "language": "Мова"
+    "language": "Мова",
+    "editProfile": "Редагувати профіль"
+  },
+  "profile": {
+    "title": "Профіль",
+    "name": "Ім'я",
+    "email": "Email",
+    "changePassword": "Змінити пароль",
+    "currentPassword": "Поточний пароль",
+    "newPassword": "Новий пароль",
+    "saved": "Зміни збережено"
   },
   "auth": {
     "loginTitle": "Вхід",
@@ -33,7 +43,18 @@
     "boardTitle": "Назва дошки",
     "empty": "У вас ще немає дошок",
     "deleteConfirm": "Видалити дошку «{title}»? Усі колонки та картки буде втрачено.",
-    "open": "Відкрити"
+    "open": "Відкрити",
+    "members": "Учасники",
+    "manageMembers": "Учасники дошки",
+    "inviteEmail": "Email користувача",
+    "invite": "Запросити",
+    "owner": "Власник",
+    "you": "Ви",
+    "leave": "Вийти з дошки",
+    "remove": "Видалити",
+    "removeMemberConfirm": "Видалити «{name}» з дошки?",
+    "sharedBy": "Власник: {name}",
+    "noMembers": "Інших учасників немає"
   },
   "columns": {
     "newColumn": "Додати колонку",
@@ -64,6 +85,55 @@
     "clear": "Очистити фільтри",
     "noMatches": "Немає карток за фільтром"
   },
+  "views": {
+    "board": "Дошка",
+    "list": "Список",
+    "calendar": "Календар",
+    "noDueDate": "Без дедлайну",
+    "today": "Сьогодні",
+    "previousMonth": "Попередній місяць",
+    "nextMonth": "Наступний місяць"
+  },
+  "activity": {
+    "title": "Журнал активності",
+    "empty": "Активності ще немає",
+    "created": "{actor} створив(ла) «{task}»",
+    "updated": "{actor} оновив(ла) «{task}»",
+    "moved": "{actor} перемістив(ла) «{task}» з «{from}» до «{to}»",
+    "deleted": "{actor} видалив(ла) «{task}»"
+  },
+  "comments": {
+    "title": "Коментарі",
+    "empty": "Коментарів ще немає",
+    "placeholder": "Напишіть коментар..."
+  },
+  "notifications": {
+    "title": "Сповіщення",
+    "empty": "Найближчих дедлайнів немає",
+    "overdue": "Просрочено",
+    "dueSoon": "Найближчим часом",
+    "dueOn": "дедлайн {date}"
+  },
+  "aiAssist": {
+    "title": "AI-асистент",
+    "description": "Отримайте пропозиції AI щодо перерозподілу задач та зміни пріоритетів на основі дедлайнів і WIP-лімітів.",
+    "generateButton": "Згенерувати пропозиції",
+    "noSuggestions": "Наразі пропозицій немає",
+    "apply": "Застосувати",
+    "moveTo": "перемістити в",
+    "priorityChange": "новий пріоритет"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Сторінку не знайдено.",
+    "backHome": "На головну"
+  },
+  "error": {
+    "title": "Щось пішло не так",
+    "message": "Сталася неочікувана помилка. Спробуйте ще раз.",
+    "retry": "Спробувати ще раз",
+    "backHome": "На головну"
+  },
   "errors": {
     "UNAUTHORIZED": "Потрібно увійти в систему.",
     "VALIDATION": "Перевірте правильність заповнення полів.",
@@ -71,6 +141,11 @@
     "FORBIDDEN": "Недостатньо прав.",
     "SERVER_ERROR": "Щось пішло не так. Спробуйте ще раз.",
     "EMAIL_TAKEN": "Цей email вже зареєстровано.",
-    "INVALID_CREDENTIALS": "Невірний email або пароль."
+    "INVALID_CREDENTIALS": "Невірний email або пароль.",
+    "USER_NOT_FOUND": "Користувача з таким email не знайдено.",
+    "ALREADY_MEMBER": "Цей користувач вже є учасником дошки.",
+    "INCORRECT_PASSWORD": "Поточний пароль введено неправильно.",
+    "AI_UNAVAILABLE": "AI-асистент тимчасово недоступний. Спробуйте пізніше.",
+    "RATE_LIMITED": "Занадто багато спроб. Спробуйте пізніше."
   }
 }

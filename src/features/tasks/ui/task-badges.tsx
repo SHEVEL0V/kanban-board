@@ -9,8 +9,15 @@ import { PRIORITY_COLOR } from "@/features/tasks/lib/priority-color";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 // Compact priority/due-date indicators shown on every task card.
-export function TaskBadges({ priority, dueDate }: { priority: TaskPriority; dueDate: Date | null }) {
-  const { dict } = useDictionary();
+export function TaskBadges({
+  priority,
+  dueDate,
+}: {
+  priority: TaskPriority;
+  dueDate: Date | null;
+}) {
+  const { dict, locale } = useDictionary();
+  const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
   // "Overdue" is a point-in-time UI hint, not derived state — reading the
   // clock here is intentional even though it's impure for the compiler.
   // eslint-disable-next-line react-hooks/purity
@@ -41,7 +48,7 @@ export function TaskBadges({ priority, dueDate }: { priority: TaskPriority; dueD
       {dueDate ? (
         <Chip
           icon={<CalendarTodayIcon />}
-          label={dueDate.toLocaleDateString()}
+          label={formatter.format(dueDate)}
           size="small"
           color={overdue ? "error" : "default"}
           variant="outlined"

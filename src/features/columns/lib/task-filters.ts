@@ -11,7 +11,7 @@ export type TaskFilters = {
 
 export const EMPTY_TASK_FILTERS: TaskFilters = { search: "", priority: "all", dueDate: "all" };
 
-const DUE_SOON_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+export const DUE_SOON_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function hasActiveFilters(filters: TaskFilters): boolean {
   return filters.search.trim() !== "" || filters.priority !== "all" || filters.dueDate !== "all";
