@@ -1,0 +1,76 @@
+{
+  "common": {
+    "appName": "Kanban Board",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "create": "Create",
+    "add": "Add",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "boards": "Boards",
+    "logout": "Log out",
+    "toggleTheme": "Toggle theme",
+    "language": "Language"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Sign up",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Log in",
+    "registerButton": "Sign up",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "goToRegister": "Sign up",
+    "goToLogin": "Log in"
+  },
+  "boards": {
+    "title": "My boards",
+    "newBoard": "New board",
+    "boardTitle": "Board title",
+    "empty": "You don't have any boards yet",
+    "deleteConfirm": "Delete board \"{title}\"? All columns and tasks will be lost.",
+    "open": "Open"
+  },
+  "columns": {
+    "newColumn": "Add column",
+    "columnTitle": "Column title",
+    "deleteConfirm": "Delete column \"{title}\" together with its tasks?",
+    "settingsTitle": "Column settings",
+    "wipLimit": "WIP limit",
+    "wipLimitHelper": "Leave empty for no limit"
+  },
+  "tasks": {
+    "newTask": "Add task",
+    "taskTitle": "Task title",
+    "description": "Description",
+    "deleteConfirm": "Delete task \"{title}\"?",
+    "priority": "Priority",
+    "priorityLow": "Low",
+    "priorityMedium": "Medium",
+    "priorityHigh": "High",
+    "dueDate": "Due date"
+  },
+  "filters": {
+    "searchPlaceholder": "Search tasks...",
+    "allPriorities": "All priorities",
+    "dueDateAll": "Any due date",
+    "overdue": "Overdue",
+    "dueSoon": "Due in 7 days",
+    "noDueDate": "No due date",
+    "clear": "Clear filters",
+    "noMatches": "No tasks match the filter"
+  },
+  "errors": {
+    "UNAUTHORIZED": "You need to be logged in.",
+    "VALIDATION": "Please check the highlighted fields.",
+    "NOT_FOUND": "Not found.",
+    "FORBIDDEN": "You don't have permission to do that.",
+    "SERVER_ERROR": "Something went wrong. Please try again.",
+    "EMAIL_TAKEN": "This email is already registered.",
+    "INVALID_CREDENTIALS": "Invalid email or password."
+  }
+}

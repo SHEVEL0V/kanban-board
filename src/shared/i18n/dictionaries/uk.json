@@ -1,0 +1,76 @@
+{
+  "common": {
+    "appName": "Kanban Board",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "create": "Створити",
+    "add": "Додати",
+    "loading": "Завантаження..."
+  },
+  "nav": {
+    "boards": "Дошки",
+    "logout": "Вийти",
+    "toggleTheme": "Перемкнути тему",
+    "language": "Мова"
+  },
+  "auth": {
+    "loginTitle": "Вхід",
+    "registerTitle": "Реєстрація",
+    "name": "Ім'я",
+    "email": "Email",
+    "password": "Пароль",
+    "loginButton": "Увійти",
+    "registerButton": "Зареєструватися",
+    "noAccount": "Немає акаунту?",
+    "haveAccount": "Вже є акаунт?",
+    "goToRegister": "Зареєструватися",
+    "goToLogin": "Увійти"
+  },
+  "boards": {
+    "title": "Мої дошки",
+    "newBoard": "Нова дошка",
+    "boardTitle": "Назва дошки",
+    "empty": "У вас ще немає дошок",
+    "deleteConfirm": "Видалити дошку «{title}»? Усі колонки та картки буде втрачено.",
+    "open": "Відкрити"
+  },
+  "columns": {
+    "newColumn": "Додати колонку",
+    "columnTitle": "Назва колонки",
+    "deleteConfirm": "Видалити колонку «{title}» разом з картками?",
+    "settingsTitle": "Налаштування колонки",
+    "wipLimit": "WIP-ліміт",
+    "wipLimitHelper": "Залиште порожнім, якщо без обмежень"
+  },
+  "tasks": {
+    "newTask": "Додати картку",
+    "taskTitle": "Назва картки",
+    "description": "Опис",
+    "deleteConfirm": "Видалити картку «{title}»?",
+    "priority": "Пріоритет",
+    "priorityLow": "Низький",
+    "priorityMedium": "Середній",
+    "priorityHigh": "Високий",
+    "dueDate": "Дедлайн"
+  },
+  "filters": {
+    "searchPlaceholder": "Пошук задач...",
+    "allPriorities": "Усі пріоритети",
+    "dueDateAll": "Будь-який дедлайн",
+    "overdue": "Просрочені",
+    "dueSoon": "Найближчі 7 днів",
+    "noDueDate": "Без дедлайну",
+    "clear": "Очистити фільтри",
+    "noMatches": "Немає карток за фільтром"
+  },
+  "errors": {
+    "UNAUTHORIZED": "Потрібно увійти в систему.",
+    "VALIDATION": "Перевірте правильність заповнення полів.",
+    "NOT_FOUND": "Не знайдено.",
+    "FORBIDDEN": "Недостатньо прав.",
+    "SERVER_ERROR": "Щось пішло не так. Спробуйте ще раз.",
+    "EMAIL_TAKEN": "Цей email вже зареєстровано.",
+    "INVALID_CREDENTIALS": "Невірний email або пароль."
+  }
+}

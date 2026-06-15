@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  boards       Board[]
+  createdAt    DateTime @default(now())
+}
+
+model Board {
+  id        String   @id @default(cuid())
+  title     String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  columns   Column[]
+  createdAt DateTime @default(now())
+
+  @@index([ownerId])
+}
+
+model Column {
+  id       String @id @default(cuid())
+  title    String
+  order    Int
+  wipLimit Int?
+  board    Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId  String
+  tasks    Task[]
+
+  @@index([boardId])
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  order       Int
+  column      Column       @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  columnId    String
+  createdAt   DateTime     @default(now())
+
+  @@index([columnId])
+}
