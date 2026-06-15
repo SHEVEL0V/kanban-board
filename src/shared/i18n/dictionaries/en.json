@@ -12,7 +12,17 @@
     "boards": "Boards",
     "logout": "Log out",
     "toggleTheme": "Toggle theme",
-    "language": "Language"
+    "language": "Language",
+    "editProfile": "Edit profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "saved": "Changes saved"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -75,6 +85,44 @@
     "clear": "Clear filters",
     "noMatches": "No tasks match the filter"
   },
+  "views": {
+    "board": "Board",
+    "list": "List",
+    "calendar": "Calendar",
+    "noDueDate": "No due date",
+    "today": "Today",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "activity": {
+    "title": "Activity log",
+    "empty": "No activity yet",
+    "created": "{actor} created \"{task}\"",
+    "updated": "{actor} updated \"{task}\"",
+    "moved": "{actor} moved \"{task}\" from \"{from}\" to \"{to}\"",
+    "deleted": "{actor} deleted \"{task}\""
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet",
+    "placeholder": "Write a comment..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No upcoming deadlines",
+    "overdue": "Overdue",
+    "dueSoon": "Due soon",
+    "dueOn": "due {date}"
+  },
+  "aiAssist": {
+    "title": "AI Assist",
+    "description": "Get AI suggestions for rebalancing work in progress and task priorities based on due dates and WIP limits.",
+    "generateButton": "Generate suggestions",
+    "noSuggestions": "No suggestions right now",
+    "apply": "Apply",
+    "moveTo": "move to",
+    "priorityChange": "new priority"
+  },
   "errors": {
     "UNAUTHORIZED": "You need to be logged in.",
     "VALIDATION": "Please check the highlighted fields.",
@@ -84,6 +132,8 @@
     "EMAIL_TAKEN": "This email is already registered.",
     "INVALID_CREDENTIALS": "Invalid email or password.",
     "USER_NOT_FOUND": "No user found with this email.",
-    "ALREADY_MEMBER": "This user is already a member of this board."
+    "ALREADY_MEMBER": "This user is already a member of this board.",
+    "INCORRECT_PASSWORD": "Current password is incorrect.",
+    "AI_UNAVAILABLE": "AI Assist is currently unavailable. Please try again later."
   }
 }

@@ -2,8 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { decrypt, getSessionCookie } from "@/shared/lib/session";
-import { prisma } from "@/shared/lib/prisma";
+import { decrypt, getSessionCookie } from "@/shared/lib/auth/session";
+import { prisma } from "@/shared/lib/db/prisma";
 
 export type AuthenticatedSession = {
   userId: string;

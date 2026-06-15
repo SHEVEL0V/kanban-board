@@ -1,8 +1,8 @@
 import "server-only";
 
-import { prisma } from "@/shared/lib/prisma";
-import { verifySession } from "@/shared/lib/dal";
-import { boardAccessFilter } from "@/shared/lib/board-access";
+import { prisma } from "@/shared/lib/db/prisma";
+import { verifySession } from "@/shared/lib/auth/dal";
+import { boardAccessFilter } from "@/shared/lib/auth/board-access";
 
 export async function getBoards() {
   const { userId } = await verifySession();

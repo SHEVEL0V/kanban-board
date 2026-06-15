@@ -1,11 +1,11 @@
 "use server";
 
-import { prisma } from "@/shared/lib/prisma";
-import { runAction } from "@/shared/lib/run-action";
-import { ErrorCode, err, ok } from "@/shared/lib/result";
-import { CacheTags } from "@/shared/lib/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/board-access";
-import { nextOrder } from "@/shared/lib/ordering";
+import { prisma } from "@/shared/lib/db/prisma";
+import { runAction } from "@/shared/lib/actions/run-action";
+import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
+import { CacheTags } from "@/shared/lib/actions/cache-tags";
+import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { nextOrder } from "@/shared/lib/utils/ordering";
 import { createTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const createTask = runAction({
@@ -33,6 +33,10 @@ export const createTask = runAction({
         order: nextOrder(column.tasks[0]?.order),
       },
       select: { id: true },
+    });
+
+    await prisma.activity.create({
+      data: { boardId, actorId: session.userId, action: "CREATED", taskTitle: title },
     });
 
     return ok(task);

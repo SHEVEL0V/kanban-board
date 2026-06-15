@@ -1,9 +1,9 @@
 "use server";
 
-import { prisma } from "@/shared/lib/prisma";
-import { runAction } from "@/shared/lib/run-action";
-import { ErrorCode, err, ok } from "@/shared/lib/result";
-import { CacheTags } from "@/shared/lib/cache-tags";
+import { prisma } from "@/shared/lib/db/prisma";
+import { runAction } from "@/shared/lib/actions/run-action";
+import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
+import { CacheTags } from "@/shared/lib/actions/cache-tags";
 import { removeMemberSchema } from "@/features/boards/schema/board-member-schema";
 
 export const removeMember = runAction({

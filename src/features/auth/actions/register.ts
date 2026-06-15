@@ -2,11 +2,11 @@
 
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
-import { prisma } from "@/shared/lib/prisma";
-import { runAction } from "@/shared/lib/run-action";
-import { createSession } from "@/shared/lib/session";
-import { ErrorCode, err } from "@/shared/lib/result";
-import { routes } from "@/shared/lib/routes";
+import { prisma } from "@/shared/lib/db/prisma";
+import { runAction } from "@/shared/lib/actions/run-action";
+import { createSession } from "@/shared/lib/auth/session";
+import { ErrorCode, err } from "@/shared/lib/actions/result";
+import { routes } from "@/shared/lib/routing/routes";
 import { registerSchema } from "@/features/auth/schema/auth-schema";
 
 export const register = runAction({

@@ -11,7 +11,7 @@ import { createBoard } from "@/features/boards/actions/create-board";
 import { BoardCard } from "@/features/boards/ui/board-card";
 import { TitleDialog } from "@/shared/ui/components/title-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 type BoardSummary = {

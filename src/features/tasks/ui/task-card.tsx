@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { useTransition } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -11,31 +9,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Task } from "@/generated/prisma/client";
-import { updateTask } from "@/features/tasks/actions/update-task";
-import { deleteTask } from "@/features/tasks/actions/delete-task";
-import { TaskDialog } from "@/features/tasks/ui/task-dialog";
+import type { TaskWithComments } from "@/features/boards/queries/get-board";
 import { TaskBadges } from "@/features/tasks/ui/task-badges";
+import { TaskDialogs } from "@/features/tasks/ui/task-dialogs";
+import { useTaskCardState } from "@/features/tasks/lib/use-task-card-state";
 import { PRIORITY_COLOR } from "@/features/tasks/lib/priority-color";
-import { ConfirmDialog } from "@/shared/ui/components/confirm-dialog";
-import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
-import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 export function TaskCard({
   task,
   boardId,
+  currentUserId,
   hidden = false,
 }: {
-  task: Task;
+  task: TaskWithComments;
   boardId: string;
+  currentUserId: string;
   hidden?: boolean;
 }) {
-  const { dict } = useDictionary();
-  const [isPending, startTransition] = useTransition();
-  const [editOpen, setEditOpen] = React.useState(false);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
-  const { error, run, clearError } = useActionFeedback();
+  const state = useTaskCardState(task, boardId);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -79,7 +70,7 @@ export function TaskCard({
         <Stack
           spacing={0.5}
           sx={{ minWidth: 0, flexGrow: 1, cursor: "pointer" }}
-          onClick={() => setEditOpen(true)}
+          onClick={() => state.setEditOpen(true)}
         >
           <Typography variant="body2">{task.title}</Typography>
           {task.description ? (
@@ -98,41 +89,12 @@ export function TaskCard({
           ) : null}
           <TaskBadges priority={task.priority} dueDate={task.dueDate} />
         </Stack>
-        <IconButton size="small" onClick={() => setDeleteOpen(true)}>
+        <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>
           <DeleteIcon fontSize="small" />
         </IconButton>
       </CardContent>
 
-      <TaskDialog
-        open={editOpen}
-        dialogTitle={task.title}
-        defaultTitle={task.title}
-        defaultDescription={task.description ?? ""}
-        defaultPriority={task.priority}
-        defaultDueDate={task.dueDate}
-        pending={isPending}
-        onCloseAction={() => setEditOpen(false)}
-        onSubmitAction={(title, description, priority, dueDate) => {
-          setEditOpen(false);
-          startTransition(() =>
-            run(() =>
-              updateTask({ taskId: task.id, boardId, title, description, priority, dueDate }),
-            ),
-          );
-        }}
-      />
-
-      <ConfirmDialog
-        open={deleteOpen}
-        title={dict.common.delete}
-        description={dict.tasks.deleteConfirm.replace("{title}", task.title)}
-        onCloseAction={() => setDeleteOpen(false)}
-        onConfirmAction={() => {
-          startTransition(() => run(() => deleteTask({ taskId: task.id, boardId })));
-        }}
-      />
-
-      <ErrorSnackbar error={error} onCloseAction={clearError} />
+      <TaskDialogs task={task} state={state} boardId={boardId} currentUserId={currentUserId} />
     </Card>
   );
 }

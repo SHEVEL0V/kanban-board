@@ -8,6 +8,8 @@ export const ErrorCode = {
   INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
   USER_NOT_FOUND: "USER_NOT_FOUND",
   ALREADY_MEMBER: "ALREADY_MEMBER",
+  INCORRECT_PASSWORD: "INCORRECT_PASSWORD",
+  AI_UNAVAILABLE: "AI_UNAVAILABLE",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

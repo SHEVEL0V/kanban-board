@@ -16,7 +16,8 @@ export function TaskBadges({
   priority: TaskPriority;
   dueDate: Date | null;
 }) {
-  const { dict } = useDictionary();
+  const { dict, locale } = useDictionary();
+  const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
   // "Overdue" is a point-in-time UI hint, not derived state — reading the
   // clock here is intentional even though it's impure for the compiler.
   // eslint-disable-next-line react-hooks/purity
@@ -47,7 +48,7 @@ export function TaskBadges({
       {dueDate ? (
         <Chip
           icon={<CalendarTodayIcon />}
-          label={dueDate.toLocaleDateString()}
+          label={formatter.format(dueDate)}
           size="small"
           color={overdue ? "error" : "default"}
           variant="outlined"

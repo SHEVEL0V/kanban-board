@@ -1,11 +1,11 @@
 "use server";
 
-import { prisma } from "@/shared/lib/prisma";
-import { runAction } from "@/shared/lib/run-action";
-import { ErrorCode, err, ok } from "@/shared/lib/result";
-import { CacheTags } from "@/shared/lib/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/board-access";
-import { orderAt } from "@/shared/lib/ordering";
+import { prisma } from "@/shared/lib/db/prisma";
+import { runAction } from "@/shared/lib/actions/run-action";
+import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
+import { CacheTags } from "@/shared/lib/actions/cache-tags";
+import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { orderAt } from "@/shared/lib/utils/ordering";
 import { reorderColumnsSchema } from "@/features/columns/schema/column-schema";
 
 export const reorderColumns = runAction({

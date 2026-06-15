@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decrypt } from "@/shared/lib/session";
-import { routes } from "@/shared/lib/routes";
+import { decrypt } from "@/shared/lib/auth/session";
+import { routes } from "@/shared/lib/routing/routes";
 
 const protectedPrefixes = ["/boards"];
 const authRoutes = [routes.login(), routes.register()];

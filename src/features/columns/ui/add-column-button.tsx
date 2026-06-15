@@ -7,7 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { createColumn } from "@/features/columns/actions/create-column";
 import { TitleDialog } from "@/shared/ui/components/title-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 export function AddColumnButton({ boardId }: { boardId: string }) {

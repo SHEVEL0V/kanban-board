@@ -1,4 +1,4 @@
-import { routes } from "@/shared/lib/routes";
+import { routes } from "@/shared/lib/routing/routes";
 
 // Centralized registry of paths invalidated by mutations — keeps revalidatePath()
 // calls inside runAction out of individual feature actions.

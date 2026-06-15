@@ -10,8 +10,8 @@ import Link from "next/link";
 import { register } from "@/features/auth/actions/register";
 import { FormErrorAlert } from "@/shared/ui/components/form-error-alert";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import { routes } from "@/shared/lib/routes";
-import type { Result } from "@/shared/lib/result";
+import { routes } from "@/shared/lib/routing/routes";
+import type { Result } from "@/shared/lib/actions/result";
 
 export function RegisterForm() {
   const { dict } = useDictionary();

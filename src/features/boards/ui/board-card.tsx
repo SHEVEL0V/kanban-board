@@ -16,9 +16,9 @@ import { deleteBoard } from "@/features/boards/actions/delete-board";
 import { TitleDialog } from "@/shared/ui/components/title-dialog";
 import { ConfirmDialog } from "@/shared/ui/components/confirm-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import { routes } from "@/shared/lib/routes";
+import { routes } from "@/shared/lib/routing/routes";
 
 export function BoardCard({
   board,

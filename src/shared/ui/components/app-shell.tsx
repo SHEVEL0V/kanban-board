@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -16,8 +15,11 @@ import { useColorScheme } from "@mui/material/styles";
 import Link from "next/link";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 import { setLocale } from "@/shared/i18n/set-locale";
-import { routes } from "@/shared/lib/routes";
+import { routes } from "@/shared/lib/routing/routes";
 import type { Locale } from "@/shared/i18n/get-dictionary";
+import { UserMenu } from "@/features/profile/ui/user-menu";
+import { NotificationBell } from "@/features/notifications/ui/notification-bell";
+import type { DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
 
 function ThemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -53,9 +55,13 @@ function LanguageSwitcher() {
 
 export function AppShell({
   children,
+  user,
+  notifications,
   logoutAction,
 }: {
   children: React.ReactNode;
+  user: { name: string; email: string };
+  notifications: DueTaskNotification[];
   logoutAction: () => Promise<void>;
 }) {
   const { dict } = useDictionary();
@@ -74,9 +80,8 @@ export function AppShell({
           </Typography>
           <LanguageSwitcher />
           <ThemeToggle />
-          <Button color="inherit" onClick={logoutAction}>
-            {dict.nav.logout}
-          </Button>
+          <NotificationBell notifications={notifications} />
+          <UserMenu name={user.name} email={user.email} logoutAction={logoutAction} />
         </Toolbar>
       </AppBar>
       <Container component="main" maxWidth="xl" sx={{ flexGrow: 1, py: 3 }}>

@@ -1,13 +1,17 @@
 import Stack from "@mui/material/Stack";
 import { getBoard } from "@/features/boards/queries/get-board";
+import { getActivityLog } from "@/features/activity/queries/get-activity-log";
 import { BoardHeader } from "@/features/boards/ui/board-header";
-import { ColumnList } from "@/features/columns/ui/column-list";
-import { verifySession } from "@/shared/lib/dal";
+import { BoardView } from "@/features/columns/ui/board-view";
+import { verifySession } from "@/shared/lib/auth/dal";
 
 export default async function BoardPage({ params }: { params: Promise<{ boardId: string }> }) {
   const { boardId } = await params;
-  const board = await getBoard(boardId);
-  const { userId } = await verifySession();
+  const [board, activities, { userId }] = await Promise.all([
+    getBoard(boardId),
+    getActivityLog(boardId),
+    verifySession(),
+  ]);
 
   return (
     <Stack spacing={2}>
@@ -19,7 +23,12 @@ export default async function BoardPage({ params }: { params: Promise<{ boardId:
         isOwner={board.ownerId === userId}
         currentUserId={userId}
       />
-      <ColumnList boardId={board.id} columns={board.columns} />
+      <BoardView
+        boardId={board.id}
+        columns={board.columns}
+        activities={activities}
+        currentUserId={userId}
+      />
     </Stack>
   );
 }

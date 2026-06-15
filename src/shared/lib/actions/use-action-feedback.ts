@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ErrorCode, Result } from "@/shared/lib/result";
+import type { ErrorCode, Result } from "@/shared/lib/actions/result";
 
 // Captures the error code from a fire-and-forget mutation so the UI can
 // surface it in a toast instead of silently dropping failed actions.

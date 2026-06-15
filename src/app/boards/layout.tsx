@@ -1,6 +1,18 @@
+import { redirect } from "next/navigation";
 import { AppShell } from "@/shared/ui/components/app-shell";
 import { logout } from "@/features/auth/actions/logout";
+import { getCurrentUser } from "@/shared/lib/auth/dal";
+import { getDueTaskNotifications } from "@/features/notifications/queries/get-due-task-notifications";
 
-export default function BoardsLayout({ children }: { children: React.ReactNode }) {
-  return <AppShell logoutAction={logout}>{children}</AppShell>;
+export default async function BoardsLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const notifications = await getDueTaskNotifications();
+
+  return (
+    <AppShell user={{ name: user.name, email: user.email }} notifications={notifications} logoutAction={logout}>
+      {children}
+    </AppShell>
+  );
 }

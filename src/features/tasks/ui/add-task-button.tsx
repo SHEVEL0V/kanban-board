@@ -7,7 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { createTask } from "@/features/tasks/actions/create-task";
 import { TaskDialog } from "@/features/tasks/ui/task-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId: string }) {

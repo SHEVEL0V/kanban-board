@@ -1,10 +1,10 @@
 "use server";
 
-import { prisma } from "@/shared/lib/prisma";
-import { runAction } from "@/shared/lib/run-action";
-import { ErrorCode, err, ok } from "@/shared/lib/result";
-import { CacheTags } from "@/shared/lib/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/board-access";
+import { prisma } from "@/shared/lib/db/prisma";
+import { runAction } from "@/shared/lib/actions/run-action";
+import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
+import { CacheTags } from "@/shared/lib/actions/cache-tags";
+import { boardAccessFilter } from "@/shared/lib/auth/board-access";
 import { deleteColumnSchema } from "@/features/columns/schema/column-schema";
 
 export const deleteColumn = runAction({

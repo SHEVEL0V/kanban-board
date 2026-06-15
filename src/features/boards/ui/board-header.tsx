@@ -14,9 +14,9 @@ import { inviteMember } from "@/features/boards/actions/invite-member";
 import { removeMember } from "@/features/boards/actions/remove-member";
 import { BoardMembersDialog } from "@/features/boards/ui/board-members-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
-import { useActionFeedback } from "@/shared/lib/use-action-feedback";
+import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import { routes } from "@/shared/lib/routes";
+import { routes } from "@/shared/lib/routing/routes";
 import type { BoardWithColumns } from "@/features/boards/queries/get-board";
 
 export function BoardHeader({
