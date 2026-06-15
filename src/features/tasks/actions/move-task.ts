@@ -4,6 +4,7 @@ import { prisma } from "@/shared/lib/prisma";
 import { runAction } from "@/shared/lib/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/result";
 import { CacheTags } from "@/shared/lib/cache-tags";
+import { boardAccessFilter } from "@/shared/lib/board-access";
 import { orderAt } from "@/shared/lib/ordering";
 import { moveTaskSchema } from "@/features/tasks/schema/task-schema";
 
@@ -12,7 +13,7 @@ export const moveTask = runAction({
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ taskId, boardId, columnId, orderedIds }, session) => {
     const column = await prisma.column.findFirst({
-      where: { id: columnId, boardId, board: { ownerId: session.userId } },
+      where: { id: columnId, boardId, board: boardAccessFilter(session.userId) },
       select: { tasks: { select: { id: true } } },
     });
 

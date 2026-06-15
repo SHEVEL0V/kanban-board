@@ -8,23 +8,37 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  boards       Board[]
-  createdAt    DateTime @default(now())
+  id               String        @id @default(cuid())
+  email            String        @unique
+  passwordHash     String
+  name             String
+  boards           Board[]
+  boardMemberships BoardMember[]
+  createdAt        DateTime      @default(now())
 }
 
 model Board {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   title     String
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId   String
   columns   Column[]
-  createdAt DateTime @default(now())
+  members   BoardMember[]
+  createdAt DateTime      @default(now())
 
   @@index([ownerId])
+}
+
+model BoardMember {
+  id        String   @id @default(cuid())
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([boardId, userId])
+  @@index([userId])
 }
 
 model Column {

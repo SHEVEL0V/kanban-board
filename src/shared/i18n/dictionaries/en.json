@@ -33,7 +33,18 @@
     "boardTitle": "Board title",
     "empty": "You don't have any boards yet",
     "deleteConfirm": "Delete board \"{title}\"? All columns and tasks will be lost.",
-    "open": "Open"
+    "open": "Open",
+    "members": "Members",
+    "manageMembers": "Board members",
+    "inviteEmail": "User's email",
+    "invite": "Invite",
+    "owner": "Owner",
+    "you": "You",
+    "leave": "Leave board",
+    "remove": "Remove",
+    "removeMemberConfirm": "Remove \"{name}\" from this board?",
+    "sharedBy": "Owner: {name}",
+    "noMembers": "No other members yet"
   },
   "columns": {
     "newColumn": "Add column",
@@ -71,6 +82,8 @@
     "FORBIDDEN": "You don't have permission to do that.",
     "SERVER_ERROR": "Something went wrong. Please try again.",
     "EMAIL_TAKEN": "This email is already registered.",
-    "INVALID_CREDENTIALS": "Invalid email or password."
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "USER_NOT_FOUND": "No user found with this email.",
+    "ALREADY_MEMBER": "This user is already a member of this board."
   }
 }

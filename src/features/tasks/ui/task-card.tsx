@@ -65,6 +65,7 @@ export function TaskCard({
           alignItems: "flex-start",
           gap: 1,
           p: 1.5,
+          "&:last-child": { pb: 1.5 },
         }}
       >
         <IconButton
@@ -114,7 +115,9 @@ export function TaskCard({
         onSubmitAction={(title, description, priority, dueDate) => {
           setEditOpen(false);
           startTransition(() =>
-            run(() => updateTask({ taskId: task.id, boardId, title, description, priority, dueDate })),
+            run(() =>
+              updateTask({ taskId: task.id, boardId, title, description, priority, dueDate }),
+            ),
           );
         }}
       />

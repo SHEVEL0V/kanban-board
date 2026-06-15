@@ -6,6 +6,8 @@ export const ErrorCode = {
   SERVER_ERROR: "SERVER_ERROR",
   EMAIL_TAKEN: "EMAIL_TAKEN",
   INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
+  USER_NOT_FOUND: "USER_NOT_FOUND",
+  ALREADY_MEMBER: "ALREADY_MEMBER",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

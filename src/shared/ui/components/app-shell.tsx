@@ -62,7 +62,7 @@ export function AppShell({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <AppBar position="static" color="primary" enableColorOnDark>
+      <AppBar position="static" color="secondary" enableColorOnDark>
         <Toolbar sx={{ gap: 2 }}>
           <Typography
             variant="h6"

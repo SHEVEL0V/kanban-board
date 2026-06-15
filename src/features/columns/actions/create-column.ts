@@ -4,6 +4,7 @@ import { prisma } from "@/shared/lib/prisma";
 import { runAction } from "@/shared/lib/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/result";
 import { CacheTags } from "@/shared/lib/cache-tags";
+import { boardAccessFilter } from "@/shared/lib/board-access";
 import { nextOrder } from "@/shared/lib/ordering";
 import { createColumnSchema } from "@/features/columns/schema/column-schema";
 
@@ -12,7 +13,7 @@ export const createColumn = runAction({
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ boardId, title }, session) => {
     const board = await prisma.board.findFirst({
-      where: { id: boardId, ownerId: session.userId },
+      where: { id: boardId, ...boardAccessFilter(session.userId) },
       select: {
         columns: { orderBy: { order: "desc" }, take: 1, select: { order: true } },
       },

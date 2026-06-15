@@ -15,7 +15,16 @@ export const theme = createTheme({
           contrastText: "#ffffff",
         },
         secondary: {
-          main: "#7048e8", // Залишено оригінальний, або заміни на потрібний
+          main: "#f1f5f9",
+        },
+        error: {
+          main: "#ef4444",
+        },
+        success: {
+          main: "#22c55e",
+        },
+        warning: {
+          main: "#f59e0b",
         },
         text: {
           primary: "#0f172a",
@@ -36,11 +45,20 @@ export const theme = createTheme({
           contrastText: "#ffffff",
         },
         secondary: {
-          main: "#9775fa", // Залишено оригінальний, або заміни на потрібний
+          main: "#334155",
         },
         text: {
           primary: "#f8fafc",
-          secondary: "#94a3b8",
+          secondary: "#cbd5e1",
+        },
+        error: {
+          main: "#f87171",
+        },
+        success: {
+          main: "#4ade80",
+        },
+        warning: {
+          main: "#fbbf24",
         },
         background: {
           default: "#0f172a",

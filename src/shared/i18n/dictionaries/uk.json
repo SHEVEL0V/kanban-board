@@ -33,7 +33,18 @@
     "boardTitle": "Назва дошки",
     "empty": "У вас ще немає дошок",
     "deleteConfirm": "Видалити дошку «{title}»? Усі колонки та картки буде втрачено.",
-    "open": "Відкрити"
+    "open": "Відкрити",
+    "members": "Учасники",
+    "manageMembers": "Учасники дошки",
+    "inviteEmail": "Email користувача",
+    "invite": "Запросити",
+    "owner": "Власник",
+    "you": "Ви",
+    "leave": "Вийти з дошки",
+    "remove": "Видалити",
+    "removeMemberConfirm": "Видалити «{name}» з дошки?",
+    "sharedBy": "Власник: {name}",
+    "noMembers": "Інших учасників немає"
   },
   "columns": {
     "newColumn": "Додати колонку",
@@ -71,6 +82,8 @@
     "FORBIDDEN": "Недостатньо прав.",
     "SERVER_ERROR": "Щось пішло не так. Спробуйте ще раз.",
     "EMAIL_TAKEN": "Цей email вже зареєстровано.",
-    "INVALID_CREDENTIALS": "Невірний email або пароль."
+    "INVALID_CREDENTIALS": "Невірний email або пароль.",
+    "USER_NOT_FOUND": "Користувача з таким email не знайдено.",
+    "ALREADY_MEMBER": "Цей користувач вже є учасником дошки."
   }
 }
