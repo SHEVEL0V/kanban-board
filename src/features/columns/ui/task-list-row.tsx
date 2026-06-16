@@ -50,7 +50,7 @@ export function TaskListRow({
           </Typography>
         ) : null}
       </Stack>
-      <TaskBadges priority={task.priority} dueDate={task.dueDate} />
+      <TaskBadges priority={task.priority} dueDate={task.dueDate} commentCount={task._count.comments} />
       <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>
         <DeleteIcon fontSize="small" />
       </IconButton>

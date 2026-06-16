@@ -4,17 +4,20 @@ import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
 import FlagIcon from "@mui/icons-material/Flag";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import { TaskPriority } from "@/generated/prisma/browser";
 import { PRIORITY_COLOR } from "@/features/tasks/lib/priority-color";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
-// Compact priority/due-date indicators shown on every task card.
+// Compact priority/due-date/comment-count indicators shown on every task card.
 export function TaskBadges({
   priority,
   dueDate,
+  commentCount,
 }: {
   priority: TaskPriority;
   dueDate: Date | null;
+  commentCount?: number;
 }) {
   const { dict, locale } = useDictionary();
   const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
@@ -51,6 +54,15 @@ export function TaskBadges({
           label={formatter.format(dueDate)}
           size="small"
           color={overdue ? "error" : "default"}
+          variant="outlined"
+          sx={chipSx}
+        />
+      ) : null}
+      {commentCount ? (
+        <Chip
+          icon={<CommentOutlinedIcon />}
+          label={commentCount}
+          size="small"
           variant="outlined"
           sx={chipSx}
         />

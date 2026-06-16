@@ -87,7 +87,7 @@ export function TaskCard({
               {task.description}
             </Typography>
           ) : null}
-          <TaskBadges priority={task.priority} dueDate={task.dueDate} />
+          <TaskBadges priority={task.priority} dueDate={task.dueDate} commentCount={task._count.comments} />
         </Stack>
         <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>
           <DeleteIcon fontSize="small" />

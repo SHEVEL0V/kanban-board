@@ -19,7 +19,10 @@ export async function getBoard(boardId: string) {
       columns: {
         orderBy: { order: "asc" },
         include: {
-          tasks: { orderBy: { order: "asc" } },
+          tasks: {
+            orderBy: { order: "asc" },
+            include: { _count: { select: { comments: true } } },
+          },
         },
       },
     },
