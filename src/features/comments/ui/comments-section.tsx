@@ -9,35 +9,74 @@ import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { createComment } from "@/features/tasks/comments/actions/create-comment";
-import { deleteComment } from "@/features/tasks/comments/actions/delete-comment";
+import { createComment } from "@/features/comments/actions/create-comment";
+import { deleteComment } from "@/features/comments/actions/delete-comment";
+import { getComments, type CommentWithAuthor } from "@/features/comments/actions/get-comments";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import type { CommentWithAuthor } from "@/features/boards/queries/get-board";
+import type { ErrorCode } from "@/shared/lib/actions/result";
 
+// Self-contained: fetches its own comments on mount and after each mutation.
 export function CommentsSection({
   taskId,
   boardId,
-  comments,
   currentUserId,
 }: {
   taskId: string;
   boardId: string;
-  comments: CommentWithAuthor[];
   currentUserId: string;
 }) {
   const { dict, locale } = useDictionary();
   const [isPending, startTransition] = useTransition();
   const [content, setContent] = React.useState("");
-  const { error, run, clearError } = useActionFeedback();
+  const [comments, setComments] = React.useState<CommentWithAuthor[]>([]);
+  const [fetchError, setFetchError] = React.useState<ErrorCode | null>(null);
+  const { error: mutationError, run, clearError } = useActionFeedback();
   const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" });
+
+  // Monotonic counter: only the latest in-flight fetch applies its result.
+  const fetchGenRef = React.useRef(0);
+
+  const refetch = React.useCallback(() => {
+    const gen = ++fetchGenRef.current;
+    startTransition(async () => {
+      const result = await getComments({ taskId });
+      if (gen !== fetchGenRef.current) return;
+      if (result.ok && result.data) {
+        setComments(result.data);
+        setFetchError(null);
+      } else if (!result.ok) {
+        setFetchError(result.code);
+      }
+    });
+  }, [taskId]);
+
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const submit = () => {
     const trimmed = content.trim();
     if (!trimmed) return;
     setContent("");
-    startTransition(() => run(() => createComment({ taskId, boardId, content: trimmed })));
+    startTransition(() =>
+      run(async () => {
+        const result = await createComment({ taskId, boardId, content: trimmed });
+        if (result.ok) refetch();
+        return result;
+      }),
+    );
+  };
+
+  const handleDelete = (commentId: string) => {
+    startTransition(() =>
+      run(async () => {
+        const result = await deleteComment({ commentId, boardId });
+        if (result.ok) refetch();
+        return result;
+      }),
+    );
   };
 
   return (
@@ -61,10 +100,7 @@ export function CommentsSection({
                 </Typography>
               </Stack>
               {comment.authorId === currentUserId ? (
-                <IconButton
-                  size="small"
-                  onClick={() => startTransition(() => run(() => deleteComment({ commentId: comment.id, boardId })))}
-                >
+                <IconButton size="small" onClick={() => handleDelete(comment.id)}>
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               ) : null}
@@ -88,7 +124,13 @@ export function CommentsSection({
         </IconButton>
       </Stack>
 
-      <ErrorSnackbar error={error} onCloseAction={clearError} />
+      <ErrorSnackbar
+        error={fetchError ?? mutationError}
+        onCloseAction={() => {
+          clearError();
+          setFetchError(null);
+        }}
+      />
     </Stack>
   );
 }

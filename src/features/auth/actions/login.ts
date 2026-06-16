@@ -10,14 +10,19 @@ import { ErrorCode, err } from "@/shared/lib/actions/result";
 import { routes } from "@/shared/lib/routing/routes";
 import { loginSchema } from "@/features/auth/schema/auth-schema";
 
-const LOGIN_LIMIT = 5;
+const LOGIN_LIMIT = 5;           // per IP+email: prevents targeting one account
 const LOGIN_WINDOW_MS = 10 * 60 * 1000;
+const LOGIN_IP_LIMIT = 20;       // per IP: prevents password-spray across accounts
+const LOGIN_IP_WINDOW_MS = 10 * 60 * 1000;
 
 export const login = runAction({
   schema: loginSchema,
   requireAuth: false,
   handler: async ({ email, password }) => {
     const ip = await getClientIp();
+    if (!checkRateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT, LOGIN_IP_WINDOW_MS)) {
+      return err(ErrorCode.RATE_LIMITED);
+    }
     if (!checkRateLimit(`login:${ip}:${email}`, LOGIN_LIMIT, LOGIN_WINDOW_MS)) {
       return err(ErrorCode.RATE_LIMITED);
     }

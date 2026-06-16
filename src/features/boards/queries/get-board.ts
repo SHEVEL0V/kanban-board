@@ -21,12 +21,7 @@ export async function getBoard(boardId: string) {
         include: {
           tasks: {
             orderBy: { order: "asc" },
-            include: {
-              comments: {
-                orderBy: { createdAt: "asc" },
-                include: { author: { select: { id: true, name: true } } },
-              },
-            },
+            include: { _count: { select: { comments: true } } },
           },
         },
       },
@@ -42,4 +37,3 @@ export async function getBoard(boardId: string) {
 
 export type BoardWithColumns = NonNullable<Awaited<ReturnType<typeof getBoard>>>;
 export type TaskWithComments = BoardWithColumns["columns"][number]["tasks"][number];
-export type CommentWithAuthor = TaskWithComments["comments"][number];

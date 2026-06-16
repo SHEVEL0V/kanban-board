@@ -1,86 +1,83 @@
 # Kanban Board
 
-A multi-board Kanban app built with Next.js (App Router), Prisma/PostgreSQL and MUI.
+A multi-board task management app.
 
-## Features
+[![Kanban Board](https://img.shields.io/badge/Live-Demo-blue)](https://kanban-808925023135.europe-west1.run.app)
 
-- Email/password auth with sessions (JWT in cookies)
-- Multiple boards with member invites and access control
-- Columns with WIP limits, drag-and-drop tasks (@dnd-kit)
-- Tasks with priority, due dates, descriptions and comments
-- Board, list and calendar views with search/priority/due-date filters
-- Activity log per board
-- In-app notifications for overdue/upcoming due dates
-- AI Assist: Gemini-powered suggestions for rebalancing tasks
-- Ukrainian/English UI (cookie-based locale) and light/dark theme
+### Demo User
 
-## Getting started
+For testing purposes, you can use the following credentials:
 
-1. Copy `.env.example` to `.env` and fill in the values:
-   - `DATABASE_URL` — PostgreSQL connection string
-   - `SESSION_SECRET` — random secret for signing session cookies (`openssl rand -base64 32`)
-   - `GEMINI_API_KEY` / `GEMINI_MODEL` — required for the AI Assist feature
-2. Start a local PostgreSQL instance:
-   ```bash
-   docker compose up -d
-   ```
-3. Install dependencies and apply database migrations:
+- **Name**: Demo User
+- **Email**: `demo@example.com`
+- **Password**: `password123`
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router), React 19
+- **Language**: TypeScript
+- **Styling**: MUI 9
+- **Database**: PostgreSQL, Prisma 7
+- **Features**: Drag-and-drop (@dnd-kit), AI Assist (Gemini API), Auth (JWT/bcrypt)
+
+## Project Structure
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (auth)/
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   └── boards/
+│       ├── layout.tsx            # authenticated shell (AppShell + notifications)
+│       ├── page.tsx              # board list
+│       └── [boardId]/page.tsx    # single board view
+│
+├── features/                     # domain features
+│   ├── activity/                 # immutable board event log
+│   ├── ai-assist/                # Gemini REST API suggestions
+│   ├── auth/                     # login / register / logout
+│   ├── boards/                   # CRUD + membership
+│   ├── columns/                  # CRUD + reorder + views (kanban/list/calendar)
+│   ├── comments/                 # create / delete / get (lazy-loaded per task)
+│   ├── notifications/            # overdue / due-soon bell (cached 60 s)
+│   ├── profile/                  # update profile + change password
+│   └── tasks/                    # CRUD + move (drag-and-drop)
+│
+│   # Each feature follows:
+│   # actions/   — server mutations (runAction: auth → zod → $transaction → revalidate)
+│   # queries/   — server reads
+│   # schema/    — zod validation schemas
+│   # lib/       — pure helpers / hooks
+│   └── ui/      — React components
+│
+├── shared/
+│   ├── i18n/                     # cookie-based locale, en/uk dictionaries
+│   ├── lib/
+│   │   ├── actions/              # runAction factory, Result type, useActionFeedback
+│   │   ├── auth/                 # session (JWT), dal (verifySession), rate-limit
+│   │   ├── db/prisma.ts          # Prisma client singleton
+│   │   ├── env.ts                # Zod-validated process.env (fails fast at startup)
+│   │   ├── routing/routes.ts     # typed route helpers
+│   │   └── utils/                # date, ordering
+│   └── ui/
+│       ├── components/           # AppShell, dialogs, ErrorSnackbar
+│       └── theme.ts              # MUI theme + light/dark
+│
+└── proxy.ts                      # Next.js middleware: session check + redirects
+```
+
+## Development
+
+### Setup
+
+1. Copy `.env.example` to `.env` and fill in the required variables.
+2. Ensure PostgreSQL is running.
+3. Install dependencies:
    ```bash
    npm install
-   npx prisma migrate deploy
    ```
-4. Run the development server:
+4. Run migrations and seed the database:
    ```bash
-   npm run dev
+   npx prisma migrate dev
    ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Scripts
-
-- `npm run dev` — start the dev server
-- `npm run build` — production build
-- `npm run start` — start the production server
-- `npm run lint` — run ESLint
-
-## Project structure
-
-```
-prisma/
-  schema.prisma          # User, Board, BoardMember, Column, Task, Comment, Activity
-
-src/
-  app/
-    (auth)/login, register   # auth pages
-    boards/page.tsx           # board list (dashboard)
-    boards/[boardId]/page.tsx # single board view
-    boards/layout.tsx          # authenticated shell (user + notifications)
-  proxy.ts                # Next.js proxy: auth redirects (replaces middleware.ts)
-
-  shared/
-    lib/
-      actions/            # runAction factory, Result/ok/err, cache tags, action feedback hook
-      auth/               # session (JWT), DAL (verifySession/getCurrentUser), boardAccessFilter
-      db/                 # Prisma client singleton
-      routing/            # typed route helpers
-      utils/              # date + ordering helpers
-    i18n/                 # locale context, dictionaries (en/uk)
-    ui/
-      components/         # AppShell, ConfirmDialog, ErrorSnackbar, FormErrorAlert, TitleDialog
-      theme.ts, theme-registry.tsx
-
-  features/
-    auth/                 # login/register/logout
-    profile/              # update profile, change password, user menu
-    boards/               # CRUD, members/invites, board list & header
-    columns/              # CRUD, reorder, filters, board/list/calendar views
-    tasks/                # CRUD, move, priority/due-date badges, task dialog
-      comments/           # create/delete comments
-    activity/             # per-board activity log
-    notifications/        # due-date notifications (bell + dialog)
-    ai-assist/            # Gemini-powered task/priority suggestions
-
-  generated/prisma/       # generated Prisma client (gitignored)
-```
-
-See `CLAUDE.md` for a detailed breakdown of each feature's files and conventions.

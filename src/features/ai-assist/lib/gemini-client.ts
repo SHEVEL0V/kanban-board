@@ -1,5 +1,7 @@
 import "server-only";
 
+import { env } from "@/shared/lib/env";
+
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 const SUGGESTIONS_RESPONSE_SCHEMA = {
@@ -20,8 +22,8 @@ const SUGGESTIONS_RESPONSE_SCHEMA = {
 const PROMPT_INSTRUCTIONS = `You are a project management assistant for a kanban board. Given the board state below, suggest up to 5 changes that would improve task prioritization or balance work in progress (e.g. move a task out of an over-WIP-limit column, raise the priority of an overdue or due-soon task). Only suggest changes for tasks that actually need one. Respond with a JSON array of suggestions, each with a short "reason" explaining why.`;
 
 export async function requestSuggestions(boardSummary: string): Promise<unknown> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+  const apiKey = env.GEMINI_API_KEY;
+  const model = env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not configured");

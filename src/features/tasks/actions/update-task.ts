@@ -11,19 +11,22 @@ export const updateTask = runAction({
   schema: updateTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ taskId, boardId, title, description, priority, dueDate }, session) => {
-    const { count } = await prisma.task.updateMany({
-      where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
-      data: { title, description: description ?? null, priority, dueDate },
+    const updated = await prisma.$transaction(async (tx) => {
+      const { count } = await tx.task.updateMany({
+        where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
+        data: { title, description: description ?? null, priority, dueDate },
+      });
+
+      if (count === 0) return false;
+
+      await tx.activity.create({
+        data: { boardId, actorId: session.userId, action: "UPDATED", taskTitle: title },
+      });
+
+      return true;
     });
 
-    if (count === 0) {
-      return err(ErrorCode.NOT_FOUND);
-    }
-
-    await prisma.activity.create({
-      data: { boardId, actorId: session.userId, action: "UPDATED", taskTitle: title },
-    });
-
+    if (!updated) return err(ErrorCode.NOT_FOUND);
     return ok(undefined);
   },
 });

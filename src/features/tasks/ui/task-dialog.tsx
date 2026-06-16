@@ -13,8 +13,7 @@ import Divider from "@mui/material/Divider";
 import { TaskPriority } from "@/generated/prisma/browser";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 import { toDateInputValue } from "@/shared/lib/utils/date";
-import { CommentsSection } from "@/features/tasks/comments/ui/comments-section";
-import type { CommentWithAuthor } from "@/features/boards/queries/get-board";
+import { CommentsSection } from "@/features/comments/ui/comments-section";
 
 // Shared by task creation and editing — both need title + optional description.
 export function TaskDialog({
@@ -36,9 +35,14 @@ export function TaskDialog({
   defaultPriority?: TaskPriority;
   defaultDueDate?: Date | null;
   pending?: boolean;
-  comments?: { taskId: string; boardId: string; items: CommentWithAuthor[]; currentUserId: string };
+  comments?: { taskId: string; boardId: string; currentUserId: string };
   onCloseAction: () => void;
-  onSubmitAction: (title: string, description: string, priority: TaskPriority, dueDate: Date | null) => void;
+  onSubmitAction: (
+    title: string,
+    description: string,
+    priority: TaskPriority,
+    dueDate: Date | null,
+  ) => void;
 }) {
   const { dict } = useDictionary();
   const [title, setTitle] = React.useState(defaultTitle);
@@ -112,7 +116,6 @@ export function TaskDialog({
               <CommentsSection
                 taskId={comments.taskId}
                 boardId={comments.boardId}
-                comments={comments.items}
                 currentUserId={comments.currentUserId}
               />
             </>

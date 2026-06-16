@@ -7,11 +7,12 @@ import { boardAccessFilter } from "@/shared/lib/auth/board-access";
 import { generateSuggestionsSchema, suggestionsResponseSchema } from "@/features/ai-assist/schema/ai-assist-schema";
 import { buildBoardSummary } from "@/features/ai-assist/lib/build-board-summary";
 import { requestSuggestions } from "@/features/ai-assist/lib/gemini-client";
+import { env } from "@/shared/lib/env";
 
 export const generateSuggestions = runAction({
   schema: generateSuggestionsSchema,
   handler: async ({ boardId }, session) => {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!env.GEMINI_API_KEY) {
       return err(ErrorCode.AI_UNAVAILABLE);
     }
 
