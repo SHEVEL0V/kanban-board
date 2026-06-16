@@ -33,7 +33,14 @@ export const generateSuggestions = runAction({
     try {
       const raw = await requestSuggestions(buildBoardSummary(board));
       const parsed = suggestionsResponseSchema.safeParse(raw);
-      return ok({ suggestions: parsed.success ? parsed.data : [] });
+      if (!parsed.success) return ok({ suggestions: [] });
+      const seen = new Set<string>();
+      const suggestions = parsed.data.filter((s) => {
+        if (seen.has(s.taskId)) return false;
+        seen.add(s.taskId);
+        return true;
+      });
+      return ok({ suggestions });
     } catch (error) {
       console.error(error);
       return err(ErrorCode.AI_UNAVAILABLE);
