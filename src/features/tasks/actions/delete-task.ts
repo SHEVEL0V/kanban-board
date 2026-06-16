@@ -11,21 +11,24 @@ export const deleteTask = runAction({
   schema: deleteTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ taskId, boardId }, session) => {
-    const task = await prisma.task.findFirst({
-      where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
-      select: { title: true },
+    const deleted = await prisma.$transaction(async (tx) => {
+      const task = await tx.task.findFirst({
+        where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
+        select: { title: true },
+      });
+
+      if (!task) return null;
+
+      await tx.task.delete({ where: { id: taskId } });
+
+      await tx.activity.create({
+        data: { boardId, actorId: session.userId, action: "DELETED", taskTitle: task.title },
+      });
+
+      return true;
     });
 
-    if (!task) {
-      return err(ErrorCode.NOT_FOUND);
-    }
-
-    await prisma.task.delete({ where: { id: taskId } });
-
-    await prisma.activity.create({
-      data: { boardId, actorId: session.userId, action: "DELETED", taskTitle: task.title },
-    });
-
+    if (!deleted) return err(ErrorCode.NOT_FOUND);
     return ok(undefined);
   },
 });

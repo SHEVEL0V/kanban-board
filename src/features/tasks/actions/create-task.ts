@@ -12,33 +12,29 @@ export const createTask = runAction({
   schema: createTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ columnId, boardId, title, description, priority, dueDate }, session) => {
-    const column = await prisma.column.findFirst({
-      where: { id: columnId, boardId, board: boardAccessFilter(session.userId) },
-      select: {
-        tasks: { orderBy: { order: "desc" }, take: 1, select: { order: true } },
-      },
+    const task = await prisma.$transaction(async (tx) => {
+      const column = await tx.column.findFirst({
+        where: { id: columnId, boardId, board: boardAccessFilter(session.userId) },
+        select: {
+          tasks: { orderBy: { order: "desc" }, take: 1, select: { order: true } },
+        },
+      });
+
+      if (!column) return null;
+
+      const created = await tx.task.create({
+        data: { columnId, title, description, priority, dueDate, order: nextOrder(column.tasks[0]?.order) },
+        select: { id: true },
+      });
+
+      await tx.activity.create({
+        data: { boardId, actorId: session.userId, action: "CREATED", taskTitle: title },
+      });
+
+      return created;
     });
 
-    if (!column) {
-      return err(ErrorCode.NOT_FOUND);
-    }
-
-    const task = await prisma.task.create({
-      data: {
-        columnId,
-        title,
-        description,
-        priority,
-        dueDate,
-        order: nextOrder(column.tasks[0]?.order),
-      },
-      select: { id: true },
-    });
-
-    await prisma.activity.create({
-      data: { boardId, actorId: session.userId, action: "CREATED", taskTitle: title },
-    });
-
+    if (!task) return err(ErrorCode.NOT_FOUND);
     return ok(task);
   },
 });

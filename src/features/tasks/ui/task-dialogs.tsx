@@ -31,7 +31,7 @@ export function TaskDialogs({
         defaultPriority={task.priority}
         defaultDueDate={task.dueDate}
         pending={state.isPending}
-        comments={{ taskId: task.id, boardId, items: task.comments, currentUserId }}
+        comments={{ taskId: task.id, boardId, currentUserId }}
         onCloseAction={() => state.setEditOpen(false)}
         onSubmitAction={state.submitEdit}
       />

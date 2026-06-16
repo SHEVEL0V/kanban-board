@@ -2,11 +2,12 @@ import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { env } from "@/shared/lib/env";
 
 const SESSION_COOKIE = "session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
-const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
+const encodedKey = new TextEncoder().encode(env.SESSION_SECRET);
 
 export type SessionPayload = {
   userId: string;
@@ -41,7 +42,7 @@ export async function createSession(userId: string): Promise<void> {
 
   cookieStore.set(SESSION_COOKIE, session, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
     expires: new Date(expiresAt),
     path: "/",

@@ -32,7 +32,14 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): bo
 
 export async function getClientIp(): Promise<string> {
   const requestHeaders = await headers();
+  // x-real-ip is set by the trusted reverse proxy and cannot be spoofed by clients.
+  const xRealIp = requestHeaders.get("x-real-ip");
+  if (xRealIp) return xRealIp.trim();
+  // Fall back to the rightmost XFF entry (appended by our proxy, not the client).
   const forwardedFor = requestHeaders.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0]!.trim();
-  return requestHeaders.get("x-real-ip") ?? "unknown";
+  if (forwardedFor) {
+    const ips = forwardedFor.split(",").map((ip) => ip.trim());
+    return ips[ips.length - 1]!;
+  }
+  return "unknown";
 }
