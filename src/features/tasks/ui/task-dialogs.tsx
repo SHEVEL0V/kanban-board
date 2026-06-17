@@ -30,7 +30,10 @@ export function TaskDialogs({
         defaultDescription={task.description ?? ""}
         defaultPriority={task.priority}
         defaultDueDate={task.dueDate}
+        defaultAssigneeId={task.assignee?.id ?? null}
+        defaultLabelIds={task.labels.map((l) => l.id)}
         pending={state.isPending}
+        checklist={{ taskId: task.id, boardId, items: task.checklistItems }}
         comments={{ taskId: task.id, boardId, currentUserId }}
         onCloseAction={() => state.setEditOpen(false)}
         onSubmitAction={state.submitEdit}

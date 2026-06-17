@@ -14,8 +14,9 @@ import {
   type DueDateFilter,
 } from "@/features/columns/lib/task-filters";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
+import { useBoardContext } from "@/features/boards/ui/board-context";
 
-// Client-side search/priority/due-date filter bar shown above the board's columns.
+// Client-side search/priority/due-date/assignee/label filter bar shown above the board's columns.
 export function BoardFilters({
   filters,
   onChangeAction,
@@ -24,6 +25,7 @@ export function BoardFilters({
   onChangeAction: (filters: TaskFilters) => void;
 }) {
   const { dict } = useDictionary();
+  const { boardMembers, boardLabels } = useBoardContext();
 
   return (
     <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap", alignItems: "center" }}>
@@ -71,6 +73,38 @@ export function BoardFilters({
         <MenuItem value="dueSoon">{dict.filters.dueSoon}</MenuItem>
         <MenuItem value="noDueDate">{dict.filters.noDueDate}</MenuItem>
       </TextField>
+      {boardMembers.length > 0 ? (
+        <TextField
+          select
+          size="small"
+          value={filters.assigneeId}
+          onChange={(event) => onChangeAction({ ...filters, assigneeId: event.target.value })}
+          sx={{ minWidth: 160 }}
+        >
+          <MenuItem value="all">{dict.filters.allAssignees}</MenuItem>
+          {boardMembers.map((m) => (
+            <MenuItem key={m.id} value={m.id}>
+              {m.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      ) : null}
+      {boardLabels.length > 0 ? (
+        <TextField
+          select
+          size="small"
+          value={filters.labelId}
+          onChange={(event) => onChangeAction({ ...filters, labelId: event.target.value })}
+          sx={{ minWidth: 140 }}
+        >
+          <MenuItem value="all">{dict.filters.allLabels}</MenuItem>
+          {boardLabels.map((l) => (
+            <MenuItem key={l.id} value={l.id}>
+              {l.title}
+            </MenuItem>
+          ))}
+        </TextField>
+      ) : null}
       {hasActiveFilters(filters) ? (
         <Button size="small" onClick={() => onChangeAction(EMPTY_TASK_FILTERS)}>
           {dict.filters.clear}

@@ -19,10 +19,14 @@ export function useTaskCardState(task: Task, boardId: string) {
     description: string,
     priority: TaskPriority,
     dueDate: Date | null,
+    assigneeId: string | null,
+    labelIds: string[],
   ) => {
     setEditOpen(false);
     startTransition(() =>
-      run(() => updateTask({ taskId: task.id, boardId, title, description, priority, dueDate })),
+      run(() =>
+        updateTask({ taskId: task.id, boardId, title, description, priority, dueDate, assigneeId, labelIds }),
+      ),
     );
   };
 

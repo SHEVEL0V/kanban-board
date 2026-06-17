@@ -7,10 +7,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import SearchIcon from "@mui/icons-material/Search";
+import Tooltip from "@mui/material/Tooltip";
 import { useColorScheme } from "@mui/material/styles";
 import Link from "next/link";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
@@ -19,7 +19,8 @@ import { routes } from "@/shared/lib/routing/routes";
 import type { Locale } from "@/shared/i18n/get-dictionary";
 import { UserMenu } from "@/features/profile/ui/user-menu";
 import { NotificationBell } from "@/features/notifications/ui/notification-bell";
-import type { DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
+import { GlobalSearch } from "@/features/search/ui/global-search";
+import type { AssignedTaskNotification, DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
 
 function ThemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -38,18 +39,17 @@ function ThemeToggle() {
 
 function LanguageSwitcher() {
   const { locale } = useDictionary();
+  const next: Locale = locale === "uk" ? "en" : "uk";
 
   return (
-    <Select
-      value={locale}
-      onChange={(event) => setLocale(event.target.value as Locale)}
-      size="small"
-      variant="standard"
-      sx={{ color: "inherit", "&::before, &::after": { borderColor: "inherit" } }}
+    <IconButton
+      color="inherit"
+      onClick={() => setLocale(next)}
+      aria-label={`Switch to ${next.toUpperCase()}`}
+      sx={{ fontSize: "0.8125rem", fontWeight: 600, width: 40, height: 40 }}
     >
-      <MenuItem value="uk">UK</MenuItem>
-      <MenuItem value="en">EN</MenuItem>
-    </Select>
+      {locale.toUpperCase()}
+    </IconButton>
   );
 }
 
@@ -57,14 +57,28 @@ export function AppShell({
   children,
   user,
   notifications,
+  assignedTasks,
   logoutAction,
 }: {
   children: React.ReactNode;
   user: { name: string; email: string };
   notifications: DueTaskNotification[];
+  assignedTasks: AssignedTaskNotification[];
   logoutAction: () => Promise<void>;
 }) {
   const { dict } = useDictionary();
+  const [searchOpen, setSearchOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -78,15 +92,22 @@ export function AppShell({
           >
             {dict.common.appName}
           </Typography>
+          <Tooltip title={dict.search.hint}>
+            <IconButton color="inherit" onClick={() => setSearchOpen(true)}>
+              <SearchIcon />
+            </IconButton>
+          </Tooltip>
           <LanguageSwitcher />
           <ThemeToggle />
-          <NotificationBell notifications={notifications} />
+          <NotificationBell notifications={notifications} assignedTasks={assignedTasks} />
           <UserMenu name={user.name} email={user.email} logoutAction={logoutAction} />
         </Toolbar>
       </AppBar>
       <Container component="main" maxWidth="xl" sx={{ flexGrow: 1, py: 3 }}>
         {children}
       </Container>
+
+      <GlobalSearch open={searchOpen} onCloseAction={() => setSearchOpen(false)} />
     </Box>
   );
 }

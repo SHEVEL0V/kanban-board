@@ -54,7 +54,12 @@
     "remove": "Remove",
     "removeMemberConfirm": "Remove \"{name}\" from this board?",
     "sharedBy": "Owner: {name}",
-    "noMembers": "No other members yet"
+    "noMembers": "No other members yet",
+    "manageLabels": "Labels",
+    "noLabels": "No labels yet",
+    "deleteLabelConfirm": "Delete label \"{title}\"? It will be removed from all tasks.",
+    "boardSettings": "Board settings",
+    "deleteBoard": "Delete board"
   },
   "columns": {
     "newColumn": "Add column",
@@ -73,7 +78,20 @@
     "priorityLow": "Low",
     "priorityMedium": "Medium",
     "priorityHigh": "High",
-    "dueDate": "Due date"
+    "dueDate": "Due date",
+    "assignee": "Assignee",
+    "noAssignee": "No assignee",
+    "labels": "Labels",
+    "newLabel": "New label",
+    "labelName": "Label name",
+    "addLabel": "Add label",
+    "checklist": "Checklist",
+    "checklistAdd": "Add an item..."
+  },
+  "search": {
+    "placeholder": "Search tasks...",
+    "noResults": "No tasks found",
+    "hint": "⌘K"
   },
   "filters": {
     "searchPlaceholder": "Search tasks...",
@@ -82,6 +100,8 @@
     "overdue": "Overdue",
     "dueSoon": "Due in 7 days",
     "noDueDate": "No due date",
+    "allAssignees": "All assignees",
+    "allLabels": "All labels",
     "clear": "Clear filters",
     "noMatches": "No tasks match the filter"
   },
@@ -109,7 +129,9 @@
   },
   "notifications": {
     "title": "Notifications",
-    "empty": "No upcoming deadlines",
+    "empty": "No notifications",
+    "deadlines": "Deadlines",
+    "assignedToMe": "Assigned to me",
     "overdue": "Overdue",
     "dueSoon": "Due soon",
     "dueOn": "due {date}"

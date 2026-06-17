@@ -18,7 +18,7 @@ export const register = runAction({
   requireAuth: false,
   handler: async ({ name, email, password }) => {
     const ip = await getClientIp();
-    if (!checkRateLimit(`register:${ip}`, REGISTER_LIMIT, REGISTER_WINDOW_MS)) {
+    if (!(await checkRateLimit(`register:${ip}`, REGISTER_LIMIT, REGISTER_WINDOW_MS))) {
       return err(ErrorCode.RATE_LIMITED);
     }
 

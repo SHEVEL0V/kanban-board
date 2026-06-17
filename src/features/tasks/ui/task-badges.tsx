@@ -2,35 +2,30 @@
 
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
-import FlagIcon from "@mui/icons-material/Flag";
+import Avatar from "@mui/material/Avatar";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
-import { TaskPriority } from "@/generated/prisma/browser";
-import { PRIORITY_COLOR } from "@/features/tasks/lib/priority-color";
+import ChecklistIcon from "@mui/icons-material/Checklist";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
-// Compact priority/due-date/comment-count indicators shown on every task card.
+// Secondary meta indicators on task cards: date, comments, checklist, assignee.
+// Priority is intentionally excluded — it's already shown by the left border accent.
+// Labels are excluded — rendered as color strips directly by the parent card/row.
 export function TaskBadges({
-  priority,
   dueDate,
   commentCount,
+  assignee,
+  checklistItems,
 }: {
-  priority: TaskPriority;
   dueDate: Date | null;
   commentCount?: number;
+  assignee?: { id: string; name: string } | null;
+  checklistItems?: { done: boolean }[];
 }) {
-  const { dict, locale } = useDictionary();
+  const { locale } = useDictionary();
   const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
-  // "Overdue" is a point-in-time UI hint, not derived state — reading the
-  // clock here is intentional even though it's impure for the compiler.
   // eslint-disable-next-line react-hooks/purity
   const overdue = dueDate !== null && dueDate.getTime() < Date.now();
-
-  const priorityLabel = {
-    [TaskPriority.LOW]: dict.tasks.priorityLow,
-    [TaskPriority.MEDIUM]: dict.tasks.priorityMedium,
-    [TaskPriority.HIGH]: dict.tasks.priorityHigh,
-  }[priority];
 
   const chipSx = {
     fontSize: "0.6875rem",
@@ -39,15 +34,7 @@ export function TaskBadges({
   };
 
   return (
-    <Stack direction="row" useFlexGap spacing={0.5} sx={{ flexWrap: "nowrap", minWidth: 0 }}>
-      <Chip
-        icon={<FlagIcon />}
-        label={priorityLabel}
-        size="small"
-        color={PRIORITY_COLOR[priority]}
-        variant="outlined"
-        sx={chipSx}
-      />
+    <Stack direction="row" useFlexGap spacing={0.5} sx={{ flexWrap: "wrap", minWidth: 0, alignItems: "center" }}>
       {dueDate ? (
         <Chip
           icon={<CalendarTodayIcon />}
@@ -62,6 +49,25 @@ export function TaskBadges({
         <Chip
           icon={<CommentOutlinedIcon />}
           label={commentCount}
+          size="small"
+          variant="outlined"
+          sx={chipSx}
+        />
+      ) : null}
+      {checklistItems && checklistItems.length > 0 ? (
+        <Chip
+          icon={<ChecklistIcon />}
+          label={`${checklistItems.filter((i) => i.done).length}/${checklistItems.length}`}
+          size="small"
+          color={checklistItems.every((i) => i.done) ? "success" : "default"}
+          variant="outlined"
+          sx={chipSx}
+        />
+      ) : null}
+      {assignee ? (
+        <Chip
+          avatar={<Avatar sx={{ width: 16, height: 16, fontSize: "0.6rem" }}>{assignee.name[0]}</Avatar>}
+          label={assignee.name}
           size="small"
           variant="outlined"
           sx={chipSx}

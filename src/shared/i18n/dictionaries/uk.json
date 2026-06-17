@@ -54,7 +54,12 @@
     "remove": "Видалити",
     "removeMemberConfirm": "Видалити «{name}» з дошки?",
     "sharedBy": "Власник: {name}",
-    "noMembers": "Інших учасників немає"
+    "noMembers": "Інших учасників немає",
+    "manageLabels": "Мітки",
+    "noLabels": "Міток ще немає",
+    "deleteLabelConfirm": "Видалити мітку «{title}»? Вона буде прибрана з усіх карток.",
+    "boardSettings": "Налаштування дошки",
+    "deleteBoard": "Видалити дошку"
   },
   "columns": {
     "newColumn": "Додати колонку",
@@ -73,7 +78,20 @@
     "priorityLow": "Низький",
     "priorityMedium": "Середній",
     "priorityHigh": "Високий",
-    "dueDate": "Дедлайн"
+    "dueDate": "Дедлайн",
+    "assignee": "Виконавець",
+    "noAssignee": "Без виконавця",
+    "labels": "Мітки",
+    "newLabel": "Нова мітка",
+    "labelName": "Назва мітки",
+    "addLabel": "Додати мітку",
+    "checklist": "Чекліст",
+    "checklistAdd": "Додати пункт..."
+  },
+  "search": {
+    "placeholder": "Пошук задач...",
+    "noResults": "Задач не знайдено",
+    "hint": "⌘K"
   },
   "filters": {
     "searchPlaceholder": "Пошук задач...",
@@ -82,6 +100,8 @@
     "overdue": "Просрочені",
     "dueSoon": "Найближчі 7 днів",
     "noDueDate": "Без дедлайну",
+    "allAssignees": "Всі виконавці",
+    "allLabels": "Всі мітки",
     "clear": "Очистити фільтри",
     "noMatches": "Немає карток за фільтром"
   },
@@ -109,7 +129,9 @@
   },
   "notifications": {
     "title": "Сповіщення",
-    "empty": "Найближчих дедлайнів немає",
+    "empty": "Немає сповіщень",
+    "deadlines": "Дедлайни",
+    "assignedToMe": "Призначено мені",
     "overdue": "Просрочено",
     "dueSoon": "Найближчим часом",
     "dueOn": "дедлайн {date}"

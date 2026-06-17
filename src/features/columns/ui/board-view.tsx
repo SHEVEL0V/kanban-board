@@ -19,6 +19,8 @@ import type { BoardViewMode } from "@/features/columns/lib/board-view";
 import { parseBoardViewMode } from "@/features/columns/lib/board-view";
 import type { ActivityEntry } from "@/features/activity/queries/get-activity-log";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
+import { BoardProvider } from "@/features/boards/ui/board-context";
+import type { BoardLabel, BoardMemberUser } from "@/features/boards/queries/get-board";
 
 // Top-level client wrapper: holds the shared filters/view state and renders
 // the Kanban board, list, or calendar view over the same column/task data.
@@ -27,11 +29,15 @@ export function BoardView({
   columns,
   activities,
   currentUserId,
+  boardMembers,
+  boardLabels,
 }: {
   boardId: string;
   columns: ColumnWithTasks[];
   activities: ActivityEntry[];
   currentUserId: string;
+  boardMembers: BoardMemberUser[];
+  boardLabels: BoardLabel[];
 }) {
   const { dict } = useDictionary();
   const router = useRouter();
@@ -53,41 +59,43 @@ export function BoardView({
   };
 
   return (
-    <Stack spacing={2}>
-      <Stack
-        direction="row"
-        useFlexGap
-        spacing={1}
-        sx={{ flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}
-      >
-        <BoardFilters filters={filters} onChangeAction={setFilters} />
-        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-          <Tooltip title={dict.activity.title}>
-            <IconButton onClick={() => setActivityOpen(true)}>
-              <HistoryIcon />
-            </IconButton>
-          </Tooltip>
-          <AiAssistButton boardId={boardId} columns={columns} />
-          <ViewSwitcher view={view} onChangeAction={setView} />
+    <BoardProvider boardId={boardId} boardMembers={boardMembers} boardLabels={boardLabels}>
+      <Stack spacing={2}>
+        <Stack
+          direction="row"
+          useFlexGap
+          spacing={1}
+          sx={{ flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}
+        >
+          <BoardFilters filters={filters} onChangeAction={setFilters} />
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Tooltip title={dict.activity.title}>
+              <IconButton onClick={() => setActivityOpen(true)}>
+                <HistoryIcon />
+              </IconButton>
+            </Tooltip>
+            <AiAssistButton boardId={boardId} columns={columns} />
+            <ViewSwitcher view={view} onChangeAction={setView} />
+          </Stack>
         </Stack>
+
+        {view === "board" ? (
+          <ColumnList boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
+        ) : null}
+        {view === "list" ? (
+          <TaskListView boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
+        ) : null}
+        {view === "calendar" ? (
+          <TaskCalendarView boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
+        ) : null}
+
+        <ActivityDialog
+          open={activityOpen}
+          activities={activities}
+          currentUserId={currentUserId}
+          onCloseAction={() => setActivityOpen(false)}
+        />
       </Stack>
-
-      {view === "board" ? (
-        <ColumnList boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
-      ) : null}
-      {view === "list" ? (
-        <TaskListView boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
-      ) : null}
-      {view === "calendar" ? (
-        <TaskCalendarView boardId={boardId} columns={columns} filters={filters} currentUserId={currentUserId} />
-      ) : null}
-
-      <ActivityDialog
-        open={activityOpen}
-        activities={activities}
-        currentUserId={currentUserId}
-        onCloseAction={() => setActivityOpen(false)}
-      />
-    </Stack>
+    </BoardProvider>
   );
 }

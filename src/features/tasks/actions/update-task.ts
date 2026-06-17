@@ -10,14 +10,29 @@ import { updateTaskSchema } from "@/features/tasks/schema/task-schema";
 export const updateTask = runAction({
   schema: updateTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
-  handler: async ({ taskId, boardId, title, description, priority, dueDate }, session) => {
+  handler: async (
+    { taskId, boardId, title, description, priority, dueDate, assigneeId, labelIds },
+    session,
+  ) => {
     const updated = await prisma.$transaction(async (tx) => {
-      const { count } = await tx.task.updateMany({
+      // Verify access before updating (updateMany can't handle label set relation).
+      const task = await tx.task.findFirst({
         where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
-        data: { title, description: description ?? null, priority, dueDate },
+        select: { id: true },
       });
+      if (!task) return false;
 
-      if (count === 0) return false;
+      await tx.task.update({
+        where: { id: taskId },
+        data: {
+          title,
+          description: description ?? null,
+          priority,
+          dueDate,
+          assigneeId: assigneeId ?? null,
+          labels: { set: (labelIds ?? []).map((id) => ({ id })) },
+        },
+      });
 
       await tx.activity.create({
         data: { boardId, actorId: session.userId, action: "UPDATED", taskTitle: title },

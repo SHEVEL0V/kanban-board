@@ -27,7 +27,7 @@ export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId
         dialogTitle={dict.tasks.newTask}
         pending={isPending}
         onCloseAction={() => setOpen(false)}
-        onSubmitAction={(title, description, priority, dueDate) => {
+        onSubmitAction={(title, description, priority, dueDate, assigneeId, labelIds) => {
           setOpen(false);
           startTransition(() =>
             run(() =>
@@ -38,6 +38,8 @@ export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId
                 description: description || undefined,
                 priority,
                 dueDate,
+                assigneeId,
+                labelIds,
               }),
             ),
           );

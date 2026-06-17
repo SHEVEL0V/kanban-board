@@ -1,8 +1,10 @@
 "use client";
 
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { TaskWithComments } from "@/features/boards/queries/get-board";
 import { TaskBadges } from "@/features/tasks/ui/task-badges";
@@ -41,7 +43,7 @@ export function TaskListRow({
         sx={{ minWidth: 0, flexGrow: 1, cursor: "pointer" }}
         onClick={() => state.setEditOpen(true)}
       >
-        <Typography variant="body2" noWrap>
+        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
           {task.title}
         </Typography>
         {task.description ? (
@@ -50,7 +52,31 @@ export function TaskListRow({
           </Typography>
         ) : null}
       </Stack>
-      <TaskBadges priority={task.priority} dueDate={task.dueDate} commentCount={task._count.comments} />
+
+      {task.labels.length > 0 ? (
+        <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+          {task.labels.map((label) => (
+            <Tooltip key={label.id} title={label.title} placement="top">
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  backgroundColor: label.color,
+                  flexShrink: 0,
+                }}
+              />
+            </Tooltip>
+          ))}
+        </Stack>
+      ) : null}
+
+      <TaskBadges
+        dueDate={task.dueDate}
+        commentCount={task._count.comments}
+        assignee={task.assignee}
+        checklistItems={task.checklistItems}
+      />
       <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>
         <DeleteIcon fontSize="small" />
       </IconButton>

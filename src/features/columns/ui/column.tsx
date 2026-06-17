@@ -62,8 +62,9 @@ export function Column({
         flexDirection: "column",
         gap: 1.5,
         opacity: isDragging ? 0.5 : 1,
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         transition,
+        touchAction: "none",
         ...(overLimit && {
           borderColor: "error.main",
           borderWidth: 2,

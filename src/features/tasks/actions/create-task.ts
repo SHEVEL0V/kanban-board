@@ -11,7 +11,10 @@ import { createTaskSchema } from "@/features/tasks/schema/task-schema";
 export const createTask = runAction({
   schema: createTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
-  handler: async ({ columnId, boardId, title, description, priority, dueDate }, session) => {
+  handler: async (
+    { columnId, boardId, title, description, priority, dueDate, assigneeId, labelIds },
+    session,
+  ) => {
     const task = await prisma.$transaction(async (tx) => {
       const column = await tx.column.findFirst({
         where: { id: columnId, boardId, board: boardAccessFilter(session.userId) },
@@ -23,7 +26,16 @@ export const createTask = runAction({
       if (!column) return null;
 
       const created = await tx.task.create({
-        data: { columnId, title, description, priority, dueDate, order: nextOrder(column.tasks[0]?.order) },
+        data: {
+          columnId,
+          title,
+          description,
+          priority,
+          dueDate,
+          order: nextOrder(column.tasks[0]?.order),
+          assigneeId: assigneeId ?? null,
+          labels: labelIds?.length ? { connect: labelIds.map((id) => ({ id })) } : undefined,
+        },
         select: { id: true },
       });
 

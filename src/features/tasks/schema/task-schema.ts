@@ -8,6 +8,8 @@ export const createTaskSchema = z.object({
   description: z.string().trim().max(2000).optional(),
   priority: z.nativeEnum(TaskPriority).default(TaskPriority.MEDIUM),
   dueDate: z.date().nullable(),
+  assigneeId: z.string().nullable().optional(),
+  labelIds: z.array(z.string()).optional(),
 });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
@@ -19,6 +21,8 @@ export const updateTaskSchema = z.object({
   description: z.string().trim().max(2000).optional(),
   priority: z.nativeEnum(TaskPriority),
   dueDate: z.date().nullable(),
+  assigneeId: z.string().nullable().optional(),
+  labelIds: z.array(z.string()).optional(),
 });
 
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
@@ -38,3 +42,28 @@ export const moveTaskSchema = z.object({
 });
 
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
+
+export const createChecklistItemSchema = z.object({
+  taskId: z.string().min(1),
+  boardId: z.string().min(1),
+  content: z.string().trim().min(1).max(500),
+});
+
+export type CreateChecklistItemInput = z.infer<typeof createChecklistItemSchema>;
+
+export const toggleChecklistItemSchema = z.object({
+  id: z.string().min(1),
+  taskId: z.string().min(1),
+  boardId: z.string().min(1),
+  done: z.boolean(),
+});
+
+export type ToggleChecklistItemInput = z.infer<typeof toggleChecklistItemSchema>;
+
+export const deleteChecklistItemSchema = z.object({
+  id: z.string().min(1),
+  taskId: z.string().min(1),
+  boardId: z.string().min(1),
+});
+
+export type DeleteChecklistItemInput = z.infer<typeof deleteChecklistItemSchema>;

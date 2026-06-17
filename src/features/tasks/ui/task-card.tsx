@@ -1,10 +1,12 @@
 "use client";
 
+import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useSortable } from "@dnd-kit/sortable";
@@ -34,6 +36,7 @@ export function TaskCard({
   });
 
   const priorityColor = PRIORITY_COLOR[task.priority];
+  const hasLabels = task.labels.length > 0;
 
   return (
     <Card
@@ -42,8 +45,9 @@ export function TaskCard({
       sx={{
         display: hidden ? "none" : undefined,
         opacity: isDragging ? 0.5 : 1,
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         transition,
+        touchAction: "none",
         borderLeftWidth: 4,
         borderLeftColor: (theme) =>
           priorityColor === "default" ? theme.palette.divider : theme.palette[priorityColor].main,
@@ -56,7 +60,8 @@ export function TaskCard({
           alignItems: "flex-start",
           gap: 1,
           p: 1.5,
-          "&:last-child": { pb: 1.5 },
+          pb: hasLabels ? 0.75 : 1.5,
+          "&:last-child": { pb: hasLabels ? 0.75 : 1.5 },
         }}
       >
         <IconButton
@@ -72,14 +77,14 @@ export function TaskCard({
           sx={{ minWidth: 0, flexGrow: 1, cursor: "pointer" }}
           onClick={() => state.setEditOpen(true)}
         >
-          <Typography variant="body2">{task.title}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>{task.title}</Typography>
           {task.description ? (
             <Typography
               variant="caption"
               color="text.secondary"
               sx={{
                 display: "-webkit-box",
-                WebkitLineClamp: 2,
+                WebkitLineClamp: 1,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}
@@ -87,12 +92,35 @@ export function TaskCard({
               {task.description}
             </Typography>
           ) : null}
-          <TaskBadges priority={task.priority} dueDate={task.dueDate} commentCount={task._count.comments} />
+          <TaskBadges
+            dueDate={task.dueDate}
+            commentCount={task._count.comments}
+            assignee={task.assignee}
+            checklistItems={task.checklistItems}
+          />
         </Stack>
         <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>
           <DeleteIcon fontSize="small" />
         </IconButton>
       </CardContent>
+
+      {hasLabels ? (
+        <Stack direction="row" spacing={0.5} sx={{ px: 1.5, pb: 1 }}>
+          {task.labels.map((label) => (
+            <Tooltip key={label.id} title={label.title} placement="top">
+              <Box
+                sx={{
+                  height: 6,
+                  borderRadius: 0.75,
+                  flex: 1,
+                  minWidth: 20,
+                  backgroundColor: label.color,
+                }}
+              />
+            </Tooltip>
+          ))}
+        </Stack>
+      ) : null}
 
       <TaskDialogs task={task} state={state} boardId={boardId} currentUserId={currentUserId} />
     </Card>
