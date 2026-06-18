@@ -1,0 +1,3 @@
+CREATE TYPE "BoardRole" AS ENUM ('EDITOR', 'VIEWER');
+
+ALTER TABLE "BoardMember" ADD COLUMN "role" "BoardRole" NOT NULL DEFAULT 'EDITOR';
