@@ -20,7 +20,11 @@ import type { Locale } from "@/shared/i18n/get-dictionary";
 import { UserMenu } from "@/features/profile/ui/user-menu";
 import { NotificationBell } from "@/features/notifications/ui/notification-bell";
 import { GlobalSearch } from "@/features/search/ui/global-search";
-import type { AssignedTaskNotification, DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
+import { pollNotifications } from "@/features/notifications/actions/poll-notifications";
+import type { AssignedTaskNotification, DueTaskNotification, PendingConfirmation } from "@/features/notifications/queries/get-due-task-notifications";
+
+// Matches the notifications cache TTL — polling faster just re-reads the cache.
+const POLL_INTERVAL_MS = 60_000;
 
 function ThemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -58,16 +62,46 @@ export function AppShell({
   user,
   notifications,
   assignedTasks,
+  pendingConfirmation,
   logoutAction,
 }: {
   children: React.ReactNode;
   user: { name: string; email: string };
   notifications: DueTaskNotification[];
   assignedTasks: AssignedTaskNotification[];
+  pendingConfirmation: PendingConfirmation[];
   logoutAction: () => Promise<void>;
 }) {
   const { dict } = useDictionary();
   const [searchOpen, setSearchOpen] = React.useState(false);
+
+  // Live notification state — initialized from SSR, kept fresh by polling.
+  const [liveNotifications, setLiveNotifications] = React.useState(notifications);
+  const [liveAssigned, setLiveAssigned] = React.useState(assignedTasks);
+  const [livePending, setLivePending] = React.useState(pendingConfirmation);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const poll = async () => {
+      if (document.visibilityState !== "visible") return;
+      const result = await pollNotifications();
+      if (cancelled || !result.ok) return;
+      setLiveNotifications(result.data.dueNotifications);
+      setLiveAssigned(result.data.assignedTasks);
+      setLivePending(result.data.pendingConfirmation);
+    };
+
+    // Resume polling immediately when the tab becomes visible again.
+    document.addEventListener("visibilitychange", poll);
+    const id = setInterval(poll, POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", poll);
+    };
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -99,7 +133,11 @@ export function AppShell({
           </Tooltip>
           <LanguageSwitcher />
           <ThemeToggle />
-          <NotificationBell notifications={notifications} assignedTasks={assignedTasks} />
+          <NotificationBell
+            notifications={liveNotifications}
+            assignedTasks={liveAssigned}
+            pendingConfirmation={livePending}
+          />
           <UserMenu name={user.name} email={user.email} logoutAction={logoutAction} />
         </Toolbar>
       </AppBar>

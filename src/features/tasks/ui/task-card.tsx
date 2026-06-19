@@ -97,6 +97,7 @@ export function TaskCard({
             commentCount={task._count.comments}
             assignee={task.assignee}
             checklistItems={task.checklistItems}
+            isPendingReview={task.status === "PENDING_REVIEW"}
           />
         </Stack>
         <IconButton size="small" onClick={() => state.setDeleteOpen(true)}>

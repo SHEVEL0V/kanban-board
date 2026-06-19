@@ -7,18 +7,20 @@ import Tooltip from "@mui/material/Tooltip";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { NotificationDialog } from "@/features/notifications/ui/notification-dialog";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
-import type { AssignedTaskNotification, DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
+import type { AssignedTaskNotification, DueTaskNotification, PendingConfirmation } from "@/features/notifications/queries/get-due-task-notifications";
 
 export function NotificationBell({
   notifications,
   assignedTasks,
+  pendingConfirmation,
 }: {
   notifications: DueTaskNotification[];
   assignedTasks: AssignedTaskNotification[];
+  pendingConfirmation: PendingConfirmation[];
 }) {
   const { dict } = useDictionary();
   const [open, setOpen] = React.useState(false);
-  const badgeCount = notifications.length + assignedTasks.length;
+  const badgeCount = notifications.length + pendingConfirmation.length;
 
   return (
     <>
@@ -33,6 +35,7 @@ export function NotificationBell({
         open={open}
         notifications={notifications}
         assignedTasks={assignedTasks}
+        pendingConfirmation={pendingConfirmation}
         onCloseAction={() => setOpen(false)}
       />
     </>

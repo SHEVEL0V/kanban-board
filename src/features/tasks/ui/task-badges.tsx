@@ -6,6 +6,7 @@ import Avatar from "@mui/material/Avatar";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import ChecklistIcon from "@mui/icons-material/Checklist";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
 // Secondary meta indicators on task cards: date, comments, checklist, assignee.
@@ -16,11 +17,13 @@ export function TaskBadges({
   commentCount,
   assignee,
   checklistItems,
+  isPendingReview,
 }: {
   dueDate: Date | null;
   commentCount?: number;
   assignee?: { id: string; name: string } | null;
   checklistItems?: { done: boolean }[];
+  isPendingReview?: boolean;
 }) {
   const { locale } = useDictionary();
   const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
@@ -69,6 +72,15 @@ export function TaskBadges({
           avatar={<Avatar sx={{ width: 16, height: 16, fontSize: "0.6rem" }}>{assignee.name[0]}</Avatar>}
           label={assignee.name}
           size="small"
+          variant="outlined"
+          sx={chipSx}
+        />
+      ) : null}
+      {isPendingReview ? (
+        <Chip
+          icon={<HourglassBottomIcon />}
+          size="small"
+          color="warning"
           variant="outlined"
           sx={chipSx}
         />
