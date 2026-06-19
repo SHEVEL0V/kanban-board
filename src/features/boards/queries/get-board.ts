@@ -13,7 +13,7 @@ export async function getBoard(boardId: string) {
     include: {
       owner: { select: { id: true, name: true } },
       members: {
-        include: { user: { select: { id: true, name: true, email: true } } },
+        select: { id: true, userId: true, role: true, user: { select: { id: true, name: true, email: true } } },
         orderBy: { createdAt: "asc" },
       },
       labels: {
@@ -24,6 +24,7 @@ export async function getBoard(boardId: string) {
         orderBy: { order: "asc" },
         include: {
           tasks: {
+            where: { status: { not: "ARCHIVED" } },
             orderBy: { order: "asc" },
             include: {
               _count: { select: { comments: true } },
@@ -47,10 +48,16 @@ export async function getBoard(boardId: string) {
     notFound();
   }
 
-  return board;
+  const currentUserRole =
+    board.ownerId === userId
+      ? ("OWNER" as const)
+      : (board.members.find((m) => m.userId === userId)?.role ?? ("EDITOR" as const));
+
+  return { ...board, currentUserRole };
 }
 
 export type BoardWithColumns = NonNullable<Awaited<ReturnType<typeof getBoard>>>;
 export type TaskWithComments = BoardWithColumns["columns"][number]["tasks"][number];
 export type BoardLabel = BoardWithColumns["labels"][number];
+export type BoardMember = BoardWithColumns["members"][number];
 export type BoardMemberUser = { id: string; name: string };

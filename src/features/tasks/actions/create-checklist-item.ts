@@ -4,7 +4,7 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { boardEditorFilter } from "@/shared/lib/auth/board-access";
 import { nextOrder } from "@/shared/lib/utils/ordering";
 import { createChecklistItemSchema } from "@/features/tasks/schema/task-schema";
 
@@ -14,7 +14,7 @@ export const createChecklistItem = runAction({
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ taskId, boardId, content }, session) => {
     const task = await prisma.task.findFirst({
-      where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
+      where: { id: taskId, column: { boardId, board: boardEditorFilter(session.userId) } },
       select: {
         checklistItems: { orderBy: { order: "desc" }, take: 1, select: { order: true } },
       },

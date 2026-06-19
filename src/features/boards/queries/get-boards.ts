@@ -10,6 +10,13 @@ export async function getBoards() {
   return prisma.board.findMany({
     where: boardAccessFilter(userId),
     orderBy: { createdAt: "asc" },
-    select: { id: true, title: true, createdAt: true, ownerId: true, owner: { select: { name: true } } },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      ownerId: true,
+      owner: { select: { id: true, name: true } },
+      members: { select: { id: true, role: true, user: { select: { id: true, name: true, email: true } } } },
+    },
   });
 }

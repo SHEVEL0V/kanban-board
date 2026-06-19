@@ -55,11 +55,28 @@
     "removeMemberConfirm": "Видалити «{name}» з дошки?",
     "sharedBy": "Власник: {name}",
     "noMembers": "Інших учасників немає",
+    "role": "Роль",
+    "roleEditor": "Редактор",
+    "roleViewer": "Перегляд",
     "manageLabels": "Мітки",
     "noLabels": "Міток ще немає",
     "deleteLabelConfirm": "Видалити мітку «{title}»? Вона буде прибрана з усіх карток.",
     "boardSettings": "Налаштування дошки",
-    "deleteBoard": "Видалити дошку"
+    "deleteBoard": "Видалити дошку",
+    "newBoardTemplate": "Оберіть шаблон",
+    "templateBlank": "Порожня",
+    "templateBlankDesc": "Почати з чистого аркуша",
+    "templateKanban": "Kanban",
+    "templateKanbanDesc": "До виконання → В роботі → Готово",
+    "templateScrum": "Scrum",
+    "templateScrumDesc": "Бекілог, Спринт, Ревью, Готово",
+    "templatePersonal": "Особиста",
+    "templatePersonalDesc": "Ідеї, Цього тижня, Сьогодні, Готово",
+    "archive": "Архів",
+    "archiveEmpty": "Архів порожній",
+    "completedBy": "Виконав: {name}",
+    "completionDays": "{days} д.",
+    "restoreTask": "Повернути з архіву"
   },
   "columns": {
     "newColumn": "Додати колонку",
@@ -67,7 +84,8 @@
     "deleteConfirm": "Видалити колонку «{title}» разом з картками?",
     "settingsTitle": "Налаштування колонки",
     "wipLimit": "WIP-ліміт",
-    "wipLimitHelper": "Залиште порожнім, якщо без обмежень"
+    "wipLimitHelper": "Залиште порожнім, якщо без обмежень",
+    "isCompletion": "Фінальна колонка"
   },
   "tasks": {
     "newTask": "Додати картку",
@@ -86,7 +104,8 @@
     "labelName": "Назва мітки",
     "addLabel": "Додати мітку",
     "checklist": "Чекліст",
-    "checklistAdd": "Додати пункт..."
+    "checklistAdd": "Додати пункт...",
+    "confirm": "Підтвердити"
   },
   "search": {
     "placeholder": "Пошук задач...",
@@ -131,6 +150,8 @@
     "title": "Сповіщення",
     "empty": "Немає сповіщень",
     "deadlines": "Дедлайни",
+    "pendingConfirmation": "Очікують підтвердження",
+    "completedBy": "Виконав: {name}",
     "assignedToMe": "Призначено мені",
     "overdue": "Просрочено",
     "dueSoon": "Найближчим часом",

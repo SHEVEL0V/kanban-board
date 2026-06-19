@@ -9,7 +9,7 @@ import { inviteMemberSchema } from "@/features/boards/schema/board-member-schema
 export const inviteMember = runAction({
   schema: inviteMemberSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
-  handler: async ({ boardId, email }, session) => {
+  handler: async ({ boardId, email, role }, session) => {
     const board = await prisma.board.findFirst({
       where: { id: boardId, ownerId: session.userId },
       select: { id: true },
@@ -38,7 +38,7 @@ export const inviteMember = runAction({
       return err(ErrorCode.ALREADY_MEMBER);
     }
 
-    await prisma.boardMember.create({ data: { boardId, userId: user.id } });
+    await prisma.boardMember.create({ data: { boardId, userId: user.id, role } });
 
     return ok(undefined);
   },

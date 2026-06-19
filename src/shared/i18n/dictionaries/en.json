@@ -55,11 +55,28 @@
     "removeMemberConfirm": "Remove \"{name}\" from this board?",
     "sharedBy": "Owner: {name}",
     "noMembers": "No other members yet",
+    "role": "Role",
+    "roleEditor": "Editor",
+    "roleViewer": "Viewer",
     "manageLabels": "Labels",
     "noLabels": "No labels yet",
     "deleteLabelConfirm": "Delete label \"{title}\"? It will be removed from all tasks.",
     "boardSettings": "Board settings",
-    "deleteBoard": "Delete board"
+    "deleteBoard": "Delete board",
+    "newBoardTemplate": "Choose a template",
+    "templateBlank": "Blank",
+    "templateBlankDesc": "Start with an empty board",
+    "templateKanban": "Kanban",
+    "templateKanbanDesc": "To Do → In Progress → Done",
+    "templateScrum": "Scrum",
+    "templateScrumDesc": "Backlog, Sprint, Review, Done",
+    "templatePersonal": "Personal",
+    "templatePersonalDesc": "Ideas, This Week, Today, Done",
+    "archive": "Archive",
+    "archiveEmpty": "Archive is empty",
+    "completedBy": "Completed by: {name}",
+    "completionDays": "{days} d.",
+    "restoreTask": "Restore task"
   },
   "columns": {
     "newColumn": "Add column",
@@ -67,7 +84,8 @@
     "deleteConfirm": "Delete column \"{title}\" together with its tasks?",
     "settingsTitle": "Column settings",
     "wipLimit": "WIP limit",
-    "wipLimitHelper": "Leave empty for no limit"
+    "wipLimitHelper": "Leave empty for no limit",
+    "isCompletion": "Completion column"
   },
   "tasks": {
     "newTask": "Add task",
@@ -86,7 +104,8 @@
     "labelName": "Label name",
     "addLabel": "Add label",
     "checklist": "Checklist",
-    "checklistAdd": "Add an item..."
+    "checklistAdd": "Add an item...",
+    "confirm": "Confirm"
   },
   "search": {
     "placeholder": "Search tasks...",
@@ -131,6 +150,8 @@
     "title": "Notifications",
     "empty": "No notifications",
     "deadlines": "Deadlines",
+    "pendingConfirmation": "Awaiting confirmation",
+    "completedBy": "Completed by: {name}",
     "assignedToMe": "Assigned to me",
     "overdue": "Overdue",
     "dueSoon": "Due soon",

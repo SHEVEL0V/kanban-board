@@ -4,16 +4,17 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { boardEditorFilter } from "@/shared/lib/auth/board-access";
 import { orderAt } from "@/shared/lib/utils/ordering";
 import { reorderColumnsSchema } from "@/features/columns/schema/column-schema";
 
 export const reorderColumns = runAction({
   schema: reorderColumnsSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
+  notify: ({ boardId }) => [boardId],
   handler: async ({ boardId, orderedIds }, session) => {
     const board = await prisma.board.findFirst({
-      where: { id: boardId, ...boardAccessFilter(session.userId) },
+      where: { id: boardId, ...boardEditorFilter(session.userId) },
       select: { columns: { select: { id: true } } },
     });
 

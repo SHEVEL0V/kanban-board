@@ -7,12 +7,14 @@ type BoardContextValue = {
   boardId: string;
   boardMembers: BoardMemberUser[];
   boardLabels: BoardLabel[];
+  isViewer: boolean;
 };
 
 const BoardContext = React.createContext<BoardContextValue>({
   boardId: "",
   boardMembers: [],
   boardLabels: [],
+  isViewer: false,
 });
 
 export function BoardProvider({
@@ -20,10 +22,11 @@ export function BoardProvider({
   boardId,
   boardMembers,
   boardLabels,
+  isViewer,
 }: BoardContextValue & { children: React.ReactNode }) {
   const value = React.useMemo(
-    () => ({ boardId, boardMembers, boardLabels }),
-    [boardId, boardMembers, boardLabels],
+    () => ({ boardId, boardMembers, boardLabels, isViewer }),
+    [boardId, boardMembers, boardLabels, isViewer],
   );
   return <BoardContext value={value}>{children}</BoardContext>;
 }

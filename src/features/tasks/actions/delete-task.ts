@@ -4,16 +4,17 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { boardEditorFilter } from "@/shared/lib/auth/board-access";
 import { deleteTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const deleteTask = runAction({
   schema: deleteTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
+  notify: ({ boardId }) => [boardId],
   handler: async ({ taskId, boardId }, session) => {
     const deleted = await prisma.$transaction(async (tx) => {
       const task = await tx.task.findFirst({
-        where: { id: taskId, column: { boardId, board: boardAccessFilter(session.userId) } },
+        where: { id: taskId, column: { boardId, board: boardEditorFilter(session.userId) } },
         select: { title: true },
       });
 

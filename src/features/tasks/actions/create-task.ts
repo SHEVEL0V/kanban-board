@@ -4,20 +4,21 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { boardEditorFilter } from "@/shared/lib/auth/board-access";
 import { nextOrder } from "@/shared/lib/utils/ordering";
 import { createTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const createTask = runAction({
   schema: createTaskSchema,
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
+  notify: ({ boardId }) => [boardId],
   handler: async (
     { columnId, boardId, title, description, priority, dueDate, assigneeId, labelIds },
     session,
   ) => {
     const task = await prisma.$transaction(async (tx) => {
       const column = await tx.column.findFirst({
-        where: { id: columnId, boardId, board: boardAccessFilter(session.userId) },
+        where: { id: columnId, boardId, board: boardEditorFilter(session.userId) },
         select: {
           tasks: { orderBy: { order: "desc" }, take: 1, select: { order: true } },
         },
@@ -34,6 +35,7 @@ export const createTask = runAction({
           dueDate,
           order: nextOrder(column.tasks[0]?.order),
           assigneeId: assigneeId ?? null,
+          assignedById: assigneeId ? session.userId : null,
           labels: labelIds?.length ? { connect: labelIds.map((id) => ({ id })) } : undefined,
         },
         select: { id: true },

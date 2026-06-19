@@ -4,7 +4,7 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardAccessFilter } from "@/shared/lib/auth/board-access";
+import { boardEditorFilter } from "@/shared/lib/auth/board-access";
 import { createLabelSchema } from "@/features/labels/schema/label-schema";
 
 export const createLabel = runAction({
@@ -12,7 +12,7 @@ export const createLabel = runAction({
   revalidate: ({ boardId }) => [CacheTags.board(boardId)],
   handler: async ({ boardId, title, color }, session) => {
     const board = await prisma.board.findFirst({
-      where: { id: boardId, ...boardAccessFilter(session.userId) },
+      where: { id: boardId, ...boardEditorFilter(session.userId) },
       select: { id: true },
     });
     if (!board) return err(ErrorCode.NOT_FOUND);

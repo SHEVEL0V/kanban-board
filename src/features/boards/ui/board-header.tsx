@@ -11,16 +11,20 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GroupIcon from "@mui/icons-material/Group";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ArchiveIcon from "@mui/icons-material/Archive";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { inviteMember } from "@/features/boards/actions/invite-member";
 import { removeMember } from "@/features/boards/actions/remove-member";
+import { updateMemberRole } from "@/features/boards/actions/update-member-role";
+import type { BoardRole } from "@/generated/prisma/client";
 import { deleteLabel } from "@/features/labels/actions/delete-label";
 import { renameBoard } from "@/features/boards/actions/rename-board";
 import { deleteBoard } from "@/features/boards/actions/delete-board";
 import { BoardMembersDialog } from "@/features/boards/ui/board-members-dialog";
 import { BoardLabelsDialog } from "@/features/boards/ui/board-labels-dialog";
 import { BoardSettingsDialog } from "@/features/boards/ui/board-settings-dialog";
+import { ArchiveDialog } from "@/features/boards/ui/archive-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
@@ -52,6 +56,7 @@ export function BoardHeader({
   const [membersOpen, setMembersOpen] = React.useState(false);
   const [labelsOpen, setLabelsOpen] = React.useState(false);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [archiveOpen, setArchiveOpen] = React.useState(false);
   const { error, run, clearError } = useActionFeedback();
   const [settingsError, setSettingsError] = React.useState<ErrorCode | null>(null);
 
@@ -84,6 +89,11 @@ export function BoardHeader({
         {title}
       </Typography>
 
+      <Tooltip title={dict.boards.archive}>
+        <IconButton onClick={() => setArchiveOpen(true)}>
+          <ArchiveIcon />
+        </IconButton>
+      </Tooltip>
       <Tooltip title={dict.boards.manageLabels}>
         <IconButton onClick={() => setLabelsOpen(true)}>
           <LocalOfferIcon />
@@ -102,6 +112,7 @@ export function BoardHeader({
 
       <BoardLabelsDialog
         open={labelsOpen}
+        boardId={boardId}
         labels={labels}
         pending={isPending}
         onCloseAction={() => setLabelsOpen(false)}
@@ -119,12 +130,15 @@ export function BoardHeader({
         isOwner={isOwner}
         pending={isPending}
         onCloseAction={() => setMembersOpen(false)}
-        onInviteAction={(email) => {
-          startTransition(() => run(() => inviteMember({ boardId, email })));
+        onInviteAction={(email, role) => {
+          startTransition(() => run(() => inviteMember({ boardId, email, role })));
         }}
         onRemoveAction={(memberId) => {
           setMembersOpen(false);
           startTransition(() => run(() => removeMember({ boardId, memberId })));
+        }}
+        onRoleChangeAction={(memberId, role: BoardRole) => {
+          startTransition(() => run(() => updateMemberRole({ boardId, memberId, role })));
         }}
       />
 
@@ -137,6 +151,8 @@ export function BoardHeader({
         onRenameAction={handleRename}
         onDeleteAction={handleDelete}
       />
+
+      <ArchiveDialog open={archiveOpen} boardId={boardId} onCloseAction={() => setArchiveOpen(false)} />
 
       <ErrorSnackbar error={error} onCloseAction={clearError} />
       <ErrorSnackbar error={settingsError} onCloseAction={() => setSettingsError(null)} />
