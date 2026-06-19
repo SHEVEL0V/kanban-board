@@ -5,6 +5,7 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
+import { logActivity } from "@/shared/lib/actions/log-activity";
 import { boardAccessFilter } from "@/shared/lib/auth/board-access";
 
 // Archives a PENDING_REVIEW task; only the original assigner or board owner may confirm.
@@ -45,9 +46,7 @@ export const confirmTask = runAction({
         where: { id: taskId },
         data: { status: "ARCHIVED", archivedAt: new Date(), archivedById: session.userId },
       }),
-      prisma.activity.create({
-        data: { boardId, actorId: session.userId, action: "UPDATED", taskTitle: task.title },
-      }),
+      logActivity(prisma, { boardId, actorId: session.userId, action: "UPDATED", taskTitle: task.title }),
     ]);
 
     return ok(undefined);

@@ -9,3 +9,9 @@ export function nextOrder(maxOrder: number | null | undefined): number {
 export function orderAt(index: number): number {
   return (index + 1) * ORDER_STEP;
 }
+
+// True when every id is a member of `allowed` — guards reorder payloads so a
+// client can't slip in ids belonging to another column/board.
+export function isSubset(ids: string[], allowed: Set<string>): boolean {
+  return ids.every((id) => allowed.has(id));
+}

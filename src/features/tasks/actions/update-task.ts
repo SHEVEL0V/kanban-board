@@ -4,7 +4,8 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardEditorFilter } from "@/shared/lib/auth/board-access";
+import { logActivity } from "@/shared/lib/actions/log-activity";
+import { taskEditableWhere } from "@/shared/lib/auth/board-access";
 import { updateTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const updateTask = runAction({
@@ -18,7 +19,7 @@ export const updateTask = runAction({
     const updated = await prisma.$transaction(async (tx) => {
       // Verify access before updating (updateMany can't handle label set relation).
       const task = await tx.task.findFirst({
-        where: { id: taskId, column: { boardId, board: boardEditorFilter(session.userId) } },
+        where: taskEditableWhere(taskId, boardId, session.userId),
         select: { id: true, assigneeId: true, status: true },
       });
       if (!task) return false;
@@ -46,9 +47,7 @@ export const updateTask = runAction({
         },
       });
 
-      await tx.activity.create({
-        data: { boardId, actorId: session.userId, action: "UPDATED", taskTitle: title },
-      });
+      await logActivity(tx, { boardId, actorId: session.userId, action: "UPDATED", taskTitle: title });
 
       return true;
     });

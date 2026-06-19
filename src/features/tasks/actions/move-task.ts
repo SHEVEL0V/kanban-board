@@ -5,8 +5,9 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardEditorFilter } from "@/shared/lib/auth/board-access";
-import { orderAt } from "@/shared/lib/utils/ordering";
+import { logActivity } from "@/shared/lib/actions/log-activity";
+import { columnEditableWhere, taskEditableWhere } from "@/shared/lib/auth/board-access";
+import { isSubset, orderAt } from "@/shared/lib/utils/ordering";
 import { moveTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const moveTask = runAction({
@@ -19,7 +20,7 @@ export const moveTask = runAction({
   ],
   handler: async ({ taskId, boardId, columnId, orderedIds }, session) => {
     const sourceTask = await prisma.task.findFirst({
-      where: { id: taskId, column: { boardId, board: boardEditorFilter(session.userId) } },
+      where: taskEditableWhere(taskId, boardId, session.userId),
       select: {
         title: true,
         columnId: true,
@@ -34,7 +35,7 @@ export const moveTask = runAction({
     }
 
     const column = await prisma.column.findFirst({
-      where: { id: columnId, boardId, board: boardEditorFilter(session.userId) },
+      where: columnEditableWhere(columnId, boardId, session.userId),
       select: { title: true, isCompletion: true, tasks: { select: { id: true } } },
     });
 
@@ -44,7 +45,7 @@ export const moveTask = runAction({
 
     const destinationTaskIds = new Set(column.tasks.map((task) => task.id));
     destinationTaskIds.add(taskId);
-    if (!orderedIds.every((id) => destinationTaskIds.has(id))) {
+    if (!isSubset(orderedIds, destinationTaskIds)) {
       return err(ErrorCode.NOT_FOUND);
     }
 
@@ -68,15 +69,13 @@ export const moveTask = runAction({
 
     if (isChangingColumn) {
       operations.push(
-        prisma.activity.create({
-          data: {
-            boardId,
-            actorId: session.userId,
-            action: "MOVED",
-            taskTitle: sourceTask.title,
-            fromColumn: sourceTask.column.title,
-            toColumn: column.title,
-          },
+        logActivity(prisma, {
+          boardId,
+          actorId: session.userId,
+          action: "MOVED",
+          taskTitle: sourceTask.title,
+          fromColumn: sourceTask.column.title,
+          toColumn: column.title,
         }),
       );
     }

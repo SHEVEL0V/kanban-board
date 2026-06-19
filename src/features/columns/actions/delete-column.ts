@@ -4,7 +4,7 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardEditorFilter } from "@/shared/lib/auth/board-access";
+import { columnEditableWhere } from "@/shared/lib/auth/board-access";
 import { deleteColumnSchema } from "@/features/columns/schema/column-schema";
 
 export const deleteColumn = runAction({
@@ -13,7 +13,7 @@ export const deleteColumn = runAction({
   notify: ({ boardId }) => [boardId],
   handler: async ({ columnId, boardId }, session) => {
     const { count } = await prisma.column.deleteMany({
-      where: { id: columnId, boardId, board: boardEditorFilter(session.userId) },
+      where: columnEditableWhere(columnId, boardId, session.userId),
     });
 
     if (count === 0) {

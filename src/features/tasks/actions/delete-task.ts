@@ -4,7 +4,8 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardEditorFilter } from "@/shared/lib/auth/board-access";
+import { logActivity } from "@/shared/lib/actions/log-activity";
+import { taskEditableWhere } from "@/shared/lib/auth/board-access";
 import { deleteTaskSchema } from "@/features/tasks/schema/task-schema";
 
 export const deleteTask = runAction({
@@ -14,7 +15,7 @@ export const deleteTask = runAction({
   handler: async ({ taskId, boardId }, session) => {
     const deleted = await prisma.$transaction(async (tx) => {
       const task = await tx.task.findFirst({
-        where: { id: taskId, column: { boardId, board: boardEditorFilter(session.userId) } },
+        where: taskEditableWhere(taskId, boardId, session.userId),
         select: { title: true },
       });
 
@@ -22,9 +23,7 @@ export const deleteTask = runAction({
 
       await tx.task.delete({ where: { id: taskId } });
 
-      await tx.activity.create({
-        data: { boardId, actorId: session.userId, action: "DELETED", taskTitle: task.title },
-      });
+      await logActivity(tx, { boardId, actorId: session.userId, action: "DELETED", taskTitle: task.title });
 
       return true;
     });

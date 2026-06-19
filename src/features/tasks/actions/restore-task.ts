@@ -5,7 +5,7 @@ import { prisma } from "@/shared/lib/db/prisma";
 import { runAction } from "@/shared/lib/actions/run-action";
 import { ErrorCode, err, ok } from "@/shared/lib/actions/result";
 import { CacheTags } from "@/shared/lib/actions/cache-tags";
-import { boardEditorFilter } from "@/shared/lib/auth/board-access";
+import { taskEditableWhere } from "@/shared/lib/auth/board-access";
 
 // Moves an ARCHIVED task back to ACTIVE; clears completion/archive timestamps.
 export const restoreTask = runAction({
@@ -14,11 +14,7 @@ export const restoreTask = runAction({
   notify: ({ boardId }) => [boardId],
   handler: async ({ taskId, boardId }, session) => {
     const task = await prisma.task.findFirst({
-      where: {
-        id: taskId,
-        status: "ARCHIVED",
-        column: { boardId, board: boardEditorFilter(session.userId) },
-      },
+      where: { ...taskEditableWhere(taskId, boardId, session.userId), status: "ARCHIVED" },
       select: { id: true },
     });
 
