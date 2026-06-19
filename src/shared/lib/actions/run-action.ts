@@ -4,11 +4,17 @@ import type { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { verifySession, type AuthenticatedSession } from "@/shared/lib/auth/dal";
 import { ErrorCode, err, type Result } from "@/shared/lib/actions/result";
+import { publishBoardEvent, type BoardEvent } from "@/shared/lib/realtime/board-events";
+
+// A notify entry is either a bare boardId (→ generic "refresh") or a full event.
+type NotifyEntry = string | BoardEvent;
 
 type AuthedConfig<TInput, TOutput> = {
   schema: z.ZodType<TInput>;
   requireAuth?: true;
   revalidate?: (data: TInput, output: TOutput) => string[];
+  // Board events to broadcast via SSE after a successful mutation.
+  notify?: (data: TInput, output: TOutput) => NotifyEntry[];
   handler: (data: TInput, session: AuthenticatedSession) => Promise<Result<TOutput>>;
 };
 
@@ -16,6 +22,7 @@ type PublicConfig<TInput, TOutput> = {
   schema: z.ZodType<TInput>;
   requireAuth: false;
   revalidate?: (data: TInput, output: TOutput) => string[];
+  notify?: (data: TInput, output: TOutput) => NotifyEntry[];
   handler: (data: TInput, session: null) => Promise<Result<TOutput>>;
 };
 
@@ -58,6 +65,15 @@ export function runAction<TInput, TOutput>(
         for (const path of config.revalidate(parsed.data, result.data)) {
           revalidatePath(path);
         }
+      }
+
+      if (result.ok && config.notify) {
+        const events = config.notify(parsed.data, result.data).map(
+          (entry): BoardEvent =>
+            typeof entry === "string" ? { boardId: entry, type: "refresh" } : entry,
+        );
+        // Fire-and-forget: SSE broadcast must not block the action response.
+        void Promise.all(events.map(publishBoardEvent));
       }
 
       return result;

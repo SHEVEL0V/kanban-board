@@ -20,6 +20,7 @@ import { parseBoardViewMode } from "@/features/columns/lib/board-view";
 import type { ActivityEntry } from "@/features/activity/queries/get-activity-log";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 import { BoardProvider } from "@/features/boards/ui/board-context";
+import { BoardRealtimeProvider } from "@/features/boards/ui/board-realtime";
 import type { BoardLabel, BoardMemberUser } from "@/features/boards/queries/get-board";
 
 // Top-level client wrapper: holds the shared filters/view state and renders
@@ -31,6 +32,7 @@ export function BoardView({
   currentUserId,
   boardMembers,
   boardLabels,
+  isViewer,
 }: {
   boardId: string;
   columns: ColumnWithTasks[];
@@ -38,6 +40,7 @@ export function BoardView({
   currentUserId: string;
   boardMembers: BoardMemberUser[];
   boardLabels: BoardLabel[];
+  isViewer: boolean;
 }) {
   const { dict } = useDictionary();
   const router = useRouter();
@@ -59,7 +62,8 @@ export function BoardView({
   };
 
   return (
-    <BoardProvider boardId={boardId} boardMembers={boardMembers} boardLabels={boardLabels}>
+    <BoardProvider boardId={boardId} boardMembers={boardMembers} boardLabels={boardLabels} isViewer={isViewer}>
+      <BoardRealtimeProvider boardId={boardId}>
       <Stack spacing={2}>
         <Stack
           direction="row"
@@ -96,6 +100,7 @@ export function BoardView({
           onCloseAction={() => setActivityOpen(false)}
         />
       </Stack>
+      </BoardRealtimeProvider>
     </BoardProvider>
   );
 }

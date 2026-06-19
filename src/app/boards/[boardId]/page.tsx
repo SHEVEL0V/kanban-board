@@ -34,6 +34,7 @@ export default async function BoardPage({ params }: { params: Promise<{ boardId:
           ...board.members.map((m) => ({ id: m.user.id, name: m.user.name })),
         ]}
         boardLabels={board.labels}
+        isViewer={board.currentUserRole === "VIEWER"}
       />
     </Stack>
   );
