@@ -14,10 +14,12 @@ import { useBoardContext } from "@/features/boards/ui/board-context";
 export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId: string }) {
   const { dict } = useDictionary();
   const { isViewer } = useBoardContext();
-  if (isViewer) return null;
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = React.useState(false);
   const { error, run, clearError } = useActionFeedback();
+
+  // Hooks must run unconditionally — bail out only after they're called.
+  if (isViewer) return null;
 
   return (
     <>
