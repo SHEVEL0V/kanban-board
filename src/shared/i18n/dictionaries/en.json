@@ -54,7 +54,29 @@
     "remove": "Remove",
     "removeMemberConfirm": "Remove \"{name}\" from this board?",
     "sharedBy": "Owner: {name}",
-    "noMembers": "No other members yet"
+    "noMembers": "No other members yet",
+    "role": "Role",
+    "roleEditor": "Editor",
+    "roleViewer": "Viewer",
+    "manageLabels": "Labels",
+    "noLabels": "No labels yet",
+    "deleteLabelConfirm": "Delete label \"{title}\"? It will be removed from all tasks.",
+    "boardSettings": "Board settings",
+    "deleteBoard": "Delete board",
+    "newBoardTemplate": "Choose a template",
+    "templateBlank": "Blank",
+    "templateBlankDesc": "Start with an empty board",
+    "templateKanban": "Kanban",
+    "templateKanbanDesc": "To Do → In Progress → Done",
+    "templateScrum": "Scrum",
+    "templateScrumDesc": "Backlog, Sprint, Review, Done",
+    "templatePersonal": "Personal",
+    "templatePersonalDesc": "Ideas, This Week, Today, Done",
+    "archive": "Archive",
+    "archiveEmpty": "Archive is empty",
+    "completedBy": "Completed by: {name}",
+    "completionDays": "{days} d.",
+    "restoreTask": "Restore task"
   },
   "columns": {
     "newColumn": "Add column",
@@ -62,7 +84,8 @@
     "deleteConfirm": "Delete column \"{title}\" together with its tasks?",
     "settingsTitle": "Column settings",
     "wipLimit": "WIP limit",
-    "wipLimitHelper": "Leave empty for no limit"
+    "wipLimitHelper": "Leave empty for no limit",
+    "isCompletion": "Completion column"
   },
   "tasks": {
     "newTask": "Add task",
@@ -73,7 +96,21 @@
     "priorityLow": "Low",
     "priorityMedium": "Medium",
     "priorityHigh": "High",
-    "dueDate": "Due date"
+    "dueDate": "Due date",
+    "assignee": "Assignee",
+    "noAssignee": "No assignee",
+    "labels": "Labels",
+    "newLabel": "New label",
+    "labelName": "Label name",
+    "addLabel": "Add label",
+    "checklist": "Checklist",
+    "checklistAdd": "Add an item...",
+    "confirm": "Confirm"
+  },
+  "search": {
+    "placeholder": "Search tasks...",
+    "noResults": "No tasks found",
+    "hint": "⌘K"
   },
   "filters": {
     "searchPlaceholder": "Search tasks...",
@@ -82,6 +119,8 @@
     "overdue": "Overdue",
     "dueSoon": "Due in 7 days",
     "noDueDate": "No due date",
+    "allAssignees": "All assignees",
+    "allLabels": "All labels",
     "clear": "Clear filters",
     "noMatches": "No tasks match the filter"
   },
@@ -109,7 +148,11 @@
   },
   "notifications": {
     "title": "Notifications",
-    "empty": "No upcoming deadlines",
+    "empty": "No notifications",
+    "deadlines": "Deadlines",
+    "pendingConfirmation": "Awaiting confirmation",
+    "completedBy": "Completed by: {name}",
+    "assignedToMe": "Assigned to me",
     "overdue": "Overdue",
     "dueSoon": "Due soon",
     "dueOn": "due {date}"

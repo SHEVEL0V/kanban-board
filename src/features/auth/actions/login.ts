@@ -20,10 +20,10 @@ export const login = runAction({
   requireAuth: false,
   handler: async ({ email, password }) => {
     const ip = await getClientIp();
-    if (!checkRateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT, LOGIN_IP_WINDOW_MS)) {
+    if (!(await checkRateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT, LOGIN_IP_WINDOW_MS))) {
       return err(ErrorCode.RATE_LIMITED);
     }
-    if (!checkRateLimit(`login:${ip}:${email}`, LOGIN_LIMIT, LOGIN_WINDOW_MS)) {
+    if (!(await checkRateLimit(`login:${ip}:${email}`, LOGIN_LIMIT, LOGIN_WINDOW_MS))) {
       return err(ErrorCode.RATE_LIMITED);
     }
 

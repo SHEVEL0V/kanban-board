@@ -1,5 +1,3 @@
-@AGENTS.md
-
 # Project overview
 
 Kanban Board — a multi-board task management app.

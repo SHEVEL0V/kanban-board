@@ -20,6 +20,7 @@ export default async function BoardPage({ params }: { params: Promise<{ boardId:
         title={board.title}
         owner={board.owner}
         members={board.members}
+        labels={board.labels}
         isOwner={board.ownerId === userId}
         currentUserId={userId}
       />
@@ -28,6 +29,12 @@ export default async function BoardPage({ params }: { params: Promise<{ boardId:
         columns={board.columns}
         activities={activities}
         currentUserId={userId}
+        boardMembers={[
+          { id: board.owner.id, name: board.owner.name },
+          ...board.members.map((m) => ({ id: m.user.id, name: m.user.name })),
+        ]}
+        boardLabels={board.labels}
+        isViewer={board.currentUserRole === "VIEWER"}
       />
     </Stack>
   );

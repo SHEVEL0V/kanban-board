@@ -2,10 +2,9 @@ import "server-only";
 
 import { headers } from "next/headers";
 
-type Bucket = { count: number; resetAt: number };
+// ── In-memory fallback (single-instance only) ────────────────────────────────
 
-// In-memory fixed-window limiter. Good enough for a single-instance deploy;
-// switch to a shared store (e.g. Redis) if running multiple instances.
+type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
 function purgeExpired(now: number) {
@@ -14,7 +13,7 @@ function purgeExpired(now: number) {
   }
 }
 
-export function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
+function checkInMemory(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
   const bucket = buckets.get(key);
 
@@ -25,17 +24,24 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): bo
   }
 
   if (bucket.count >= limit) return false;
-
   bucket.count += 1;
   return true;
 }
 
+// ── Public API ────────────────────────────────────────────────────────────────
+
+export async function checkRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number,
+): Promise<boolean> {
+  return checkInMemory(key, limit, windowMs);
+}
+
 export async function getClientIp(): Promise<string> {
   const requestHeaders = await headers();
-  // x-real-ip is set by the trusted reverse proxy and cannot be spoofed by clients.
   const xRealIp = requestHeaders.get("x-real-ip");
   if (xRealIp) return xRealIp.trim();
-  // Fall back to the rightmost XFF entry (appended by our proxy, not the client).
   const forwardedFor = requestHeaders.get("x-forwarded-for");
   if (forwardedFor) {
     const ips = forwardedFor.split(",").map((ip) => ip.trim());

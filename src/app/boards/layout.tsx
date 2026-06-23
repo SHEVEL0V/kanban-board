@@ -8,10 +8,16 @@ export default async function BoardsLayout({ children }: { children: React.React
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const notifications = await getDueTaskNotifications();
+  const { dueNotifications, assignedTasks, pendingConfirmation } = await getDueTaskNotifications();
 
   return (
-    <AppShell user={{ name: user.name, email: user.email }} notifications={notifications} logoutAction={logout}>
+    <AppShell
+      user={{ name: user.name, email: user.email }}
+      notifications={dueNotifications}
+      assignedTasks={assignedTasks}
+      pendingConfirmation={pendingConfirmation}
+      logoutAction={logout}
+    >
       {children}
     </AppShell>
   );

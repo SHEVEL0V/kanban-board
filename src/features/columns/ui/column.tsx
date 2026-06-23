@@ -7,9 +7,16 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import { useSortable } from "@dnd-kit/sortable";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -25,6 +32,7 @@ import { ConfirmDialog } from "@/shared/ui/components/confirm-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
+import { useBoardContext } from "@/features/boards/ui/board-context";
 
 export function Column({
   column,
@@ -36,9 +44,15 @@ export function Column({
   currentUserId: string;
 }) {
   const { dict } = useDictionary();
+  const { isViewer } = useBoardContext();
   const [isPending, startTransition] = useTransition();
+  const [menuAnchor, setMenuAnchor] = React.useState<HTMLElement | null>(null);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+  const closeMenu = () => setMenuAnchor(null);
+  const openSettings = () => { closeMenu(); setSettingsOpen(true); };
+  const openDelete = () => { closeMenu(); setDeleteOpen(true); };
   const { error, run, clearError } = useActionFeedback();
 
   const hasTasks = column.tasks.length > 0;
@@ -62,8 +76,13 @@ export function Column({
         flexDirection: "column",
         gap: 1.5,
         opacity: isDragging ? 0.5 : 1,
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         transition,
+        touchAction: "none",
+        ...(column.isCompletion && {
+          borderColor: "success.main",
+          borderWidth: 2,
+        }),
         ...(overLimit && {
           borderColor: "error.main",
           borderWidth: 2,
@@ -72,12 +91,17 @@ export function Column({
     >
       <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction="row" sx={{ alignItems: "center", gap: 0.5, minWidth: 0 }}>
-          <IconButton size="small" {...attributes} {...listeners} sx={{ cursor: "grab" }}>
-            <DragIndicatorIcon fontSize="small" />
-          </IconButton>
+          {!isViewer && (
+            <IconButton size="small" {...attributes} {...listeners} sx={{ cursor: "grab" }}>
+              <DragIndicatorIcon fontSize="small" />
+            </IconButton>
+          )}
           <Typography variant="subtitle1" noWrap>
             {column.title}
           </Typography>
+          {column.isCompletion ? (
+            <CheckCircleOutlinedIcon fontSize="small" color="success" sx={{ flexShrink: 0 }} />
+          ) : null}
           {column.wipLimit !== null ? (
             <Chip
               label={`${column.tasks.length}/${column.wipLimit}`}
@@ -87,15 +111,30 @@ export function Column({
             />
           ) : null}
         </Stack>
-        <Stack direction="row" sx={{ flexShrink: 0 }}>
-          <IconButton size="small" onClick={() => setSettingsOpen(true)}>
-            <EditIcon fontSize="small" />
+        {!isViewer && (
+          <IconButton size="small" sx={{ flexShrink: 0 }} onClick={(e) => setMenuAnchor(e.currentTarget)}>
+            <MoreVertIcon fontSize="small" />
           </IconButton>
-          <IconButton size="small" onClick={() => setDeleteOpen(true)}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Stack>
+        )}
       </Stack>
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={closeMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem onClick={openSettings}>
+          <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>{dict.columns.settingsTitle}</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={openDelete} sx={{ color: "error.main" }}>
+          <ListItemIcon sx={{ color: "inherit" }}><DeleteIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>{dict.common.delete}</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <Stack spacing={1}>
         <SortableContext
@@ -127,11 +166,12 @@ export function Column({
         dialogTitle={dict.columns.settingsTitle}
         defaultTitle={column.title}
         defaultWipLimit={column.wipLimit}
+        defaultIsCompletion={column.isCompletion}
         pending={isPending}
         onCloseAction={() => setSettingsOpen(false)}
-        onSubmitAction={(title, wipLimit) => {
+        onSubmitAction={(title, wipLimit, isCompletion) => {
           setSettingsOpen(false);
-          startTransition(() => run(() => updateColumn({ columnId: column.id, title, wipLimit })));
+          startTransition(() => run(() => updateColumn({ columnId: column.id, title, wipLimit, isCompletion })));
         }}
       />
 

@@ -7,10 +7,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import SearchIcon from "@mui/icons-material/Search";
+import Tooltip from "@mui/material/Tooltip";
 import { useColorScheme } from "@mui/material/styles";
 import Link from "next/link";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
@@ -19,7 +19,12 @@ import { routes } from "@/shared/lib/routing/routes";
 import type { Locale } from "@/shared/i18n/get-dictionary";
 import { UserMenu } from "@/features/profile/ui/user-menu";
 import { NotificationBell } from "@/features/notifications/ui/notification-bell";
-import type { DueTaskNotification } from "@/features/notifications/queries/get-due-task-notifications";
+import { GlobalSearch } from "@/features/search/ui/global-search";
+import { pollNotifications } from "@/features/notifications/actions/poll-notifications";
+import type { AssignedTaskNotification, DueTaskNotification, PendingConfirmation } from "@/features/notifications/queries/get-due-task-notifications";
+
+// Matches the notifications cache TTL — polling faster just re-reads the cache.
+const POLL_INTERVAL_MS = 60_000;
 
 function ThemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -38,18 +43,17 @@ function ThemeToggle() {
 
 function LanguageSwitcher() {
   const { locale } = useDictionary();
+  const next: Locale = locale === "uk" ? "en" : "uk";
 
   return (
-    <Select
-      value={locale}
-      onChange={(event) => setLocale(event.target.value as Locale)}
-      size="small"
-      variant="standard"
-      sx={{ color: "inherit", "&::before, &::after": { borderColor: "inherit" } }}
+    <IconButton
+      color="inherit"
+      onClick={() => setLocale(next)}
+      aria-label={`Switch to ${next.toUpperCase()}`}
+      sx={{ fontSize: "0.8125rem", fontWeight: 600, width: 40, height: 40 }}
     >
-      <MenuItem value="uk">UK</MenuItem>
-      <MenuItem value="en">EN</MenuItem>
-    </Select>
+      {locale.toUpperCase()}
+    </IconButton>
   );
 }
 
@@ -57,14 +61,58 @@ export function AppShell({
   children,
   user,
   notifications,
+  assignedTasks,
+  pendingConfirmation,
   logoutAction,
 }: {
   children: React.ReactNode;
   user: { name: string; email: string };
   notifications: DueTaskNotification[];
+  assignedTasks: AssignedTaskNotification[];
+  pendingConfirmation: PendingConfirmation[];
   logoutAction: () => Promise<void>;
 }) {
   const { dict } = useDictionary();
+  const [searchOpen, setSearchOpen] = React.useState(false);
+
+  // Live notification state — initialized from SSR, kept fresh by polling.
+  const [liveNotifications, setLiveNotifications] = React.useState(notifications);
+  const [liveAssigned, setLiveAssigned] = React.useState(assignedTasks);
+  const [livePending, setLivePending] = React.useState(pendingConfirmation);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const poll = async () => {
+      if (document.visibilityState !== "visible") return;
+      const result = await pollNotifications();
+      if (cancelled || !result.ok) return;
+      setLiveNotifications(result.data.dueNotifications);
+      setLiveAssigned(result.data.assignedTasks);
+      setLivePending(result.data.pendingConfirmation);
+    };
+
+    // Resume polling immediately when the tab becomes visible again.
+    document.addEventListener("visibilitychange", poll);
+    const id = setInterval(poll, POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", poll);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -78,15 +126,26 @@ export function AppShell({
           >
             {dict.common.appName}
           </Typography>
+          <Tooltip title={dict.search.hint}>
+            <IconButton color="inherit" onClick={() => setSearchOpen(true)}>
+              <SearchIcon />
+            </IconButton>
+          </Tooltip>
           <LanguageSwitcher />
           <ThemeToggle />
-          <NotificationBell notifications={notifications} />
+          <NotificationBell
+            notifications={liveNotifications}
+            assignedTasks={liveAssigned}
+            pendingConfirmation={livePending}
+          />
           <UserMenu name={user.name} email={user.email} logoutAction={logoutAction} />
         </Toolbar>
       </AppBar>
       <Container component="main" maxWidth="xl" sx={{ flexGrow: 1, py: 3 }}>
         {children}
       </Container>
+
+      <GlobalSearch open={searchOpen} onCloseAction={() => setSearchOpen(false)} />
     </Box>
   );
 }

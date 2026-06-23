@@ -21,8 +21,40 @@ import { reorderColumns } from "@/features/columns/actions/reorder-columns";
 import { moveTask } from "@/features/tasks/actions/move-task";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
+import { useBoardContext } from "@/features/boards/ui/board-context";
+import { useBoardRealtime } from "@/features/boards/ui/board-realtime";
 
 export type ColumnWithTasks = ColumnModel & { tasks: TaskWithComments[] };
+
+// Applies a remote "task-moved" event to local column state. Returns the same
+// reference if the task isn't present locally (caller falls back to a refresh).
+function applyTaskMove(
+  columns: ColumnWithTasks[],
+  event: { taskId: string; columnId: string; orderedIds: string[] },
+): ColumnWithTasks[] | null {
+  const moved = columns
+    .flatMap((column) => column.tasks)
+    .find((task) => task.id === event.taskId);
+  const destExists = columns.some((column) => column.id === event.columnId);
+  if (!moved || !destExists) return null;
+
+  const movedTask = { ...moved, columnId: event.columnId };
+
+  return columns.map((column) => {
+    if (column.id === event.columnId) {
+      const pool = new Map(column.tasks.map((task) => [task.id, task]));
+      pool.set(event.taskId, movedTask);
+      const tasks = event.orderedIds
+        .map((id) => pool.get(id))
+        .filter((task): task is TaskWithComments => task !== undefined);
+      return { ...column, tasks };
+    }
+    if (column.id !== event.columnId && column.tasks.some((task) => task.id === event.taskId)) {
+      return { ...column, tasks: column.tasks.filter((task) => task.id !== event.taskId) };
+    }
+    return column;
+  });
+}
 
 export function ColumnList({
   boardId,
@@ -35,6 +67,8 @@ export function ColumnList({
   filters: TaskFilters;
   currentUserId: string;
 }) {
+  const { isViewer } = useBoardContext();
+  const { subscribe } = useBoardRealtime();
   const [columns, setColumns] = React.useState(initialColumns);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const { error, run, clearError } = useActionFeedback();
@@ -46,6 +80,25 @@ export function ColumnList({
     setColumns(initialColumns);
   }
 
+  // Keep a live ref so the realtime handler reads current columns without
+  // resubscribing on every state change.
+  const columnsRef = React.useRef(columns);
+  React.useEffect(() => {
+    columnsRef.current = columns;
+  }, [columns]);
+
+  // Apply remote task moves as deltas; signal "unhandled" so the provider
+  // refreshes when we can't patch (task unknown locally / not in board view).
+  React.useEffect(() => {
+    return subscribe((event) => {
+      if (event.type !== "task-moved") return false;
+      const next = applyTaskMove(columnsRef.current, event);
+      if (!next) return false;
+      setColumns(next);
+      return true;
+    });
+  }, [subscribe]);
+
   function findColumn(id: string) {
     return columns.find(
       (column) => column.id === id || column.tasks.some((task) => task.id === id),
@@ -55,6 +108,7 @@ export function ColumnList({
   // Cross-column drags need a live preview, so the task moves between
   // column arrays as soon as it's dragged over another column.
   function handleDragOver(event: DragOverEvent) {
+    if (isViewer) return;
     const { active, over } = event;
     if (!over || active.id === over.id || active.data.current?.["type"] !== "task") return;
 
@@ -84,6 +138,7 @@ export function ColumnList({
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    if (isViewer) return;
     const { active, over } = event;
     if (!over) return;
 
@@ -140,7 +195,7 @@ export function ColumnList({
             <Column key={column.id} column={column} filters={filters} currentUserId={currentUserId} />
           ))}
         </SortableContext>
-        <AddColumnButton boardId={boardId} />
+        {!isViewer && <AddColumnButton boardId={boardId} />}
       </Stack>
 
       <ErrorSnackbar error={error} onCloseAction={clearError} />

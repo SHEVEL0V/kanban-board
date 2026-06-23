@@ -11,6 +11,7 @@ export const updateColumnSchema = z.object({
   columnId: z.string().min(1),
   title: z.string().trim().min(1).max(100),
   wipLimit: z.number().int().positive().nullable(),
+  isCompletion: z.boolean().optional(),
 });
 
 export type UpdateColumnInput = z.infer<typeof updateColumnSchema>;

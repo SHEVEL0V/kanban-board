@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Link from "next/link";
 import { getDictionary } from "@/shared/i18n/get-dictionary";
 import { routes } from "@/shared/lib/routing/routes";
 
@@ -25,7 +24,7 @@ export default async function NotFound() {
         {dict.notFound.title}
       </Typography>
       <Typography color="text.secondary">{dict.notFound.message}</Typography>
-      <Button component={Link} href={routes.home()} variant="contained">
+      <Button variant="contained" href={routes.home()}>
         {dict.notFound.backHome}
       </Button>
     </Box>

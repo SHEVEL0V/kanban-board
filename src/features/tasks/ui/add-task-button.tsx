@@ -9,12 +9,17 @@ import { TaskDialog } from "@/features/tasks/ui/task-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
+import { useBoardContext } from "@/features/boards/ui/board-context";
 
 export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId: string }) {
   const { dict } = useDictionary();
+  const { isViewer } = useBoardContext();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = React.useState(false);
   const { error, run, clearError } = useActionFeedback();
+
+  // Hooks must run unconditionally — bail out only after they're called.
+  if (isViewer) return null;
 
   return (
     <>
@@ -27,7 +32,7 @@ export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId
         dialogTitle={dict.tasks.newTask}
         pending={isPending}
         onCloseAction={() => setOpen(false)}
-        onSubmitAction={(title, description, priority, dueDate) => {
+        onSubmitAction={(title, description, priority, dueDate, assigneeId, labelIds) => {
           setOpen(false);
           startTransition(() =>
             run(() =>
@@ -38,6 +43,8 @@ export function AddTaskButton({ columnId, boardId }: { columnId: string; boardId
                 description: description || undefined,
                 priority,
                 dueDate,
+                assigneeId,
+                labelIds,
               }),
             ),
           );

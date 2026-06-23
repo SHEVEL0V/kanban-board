@@ -9,16 +9,18 @@ import Stack from "@mui/material/Stack";
 import AddIcon from "@mui/icons-material/Add";
 import { createBoard } from "@/features/boards/actions/create-board";
 import { BoardCard } from "@/features/boards/ui/board-card";
-import { TitleDialog } from "@/shared/ui/components/title-dialog";
+import { CreateBoardDialog } from "@/features/boards/ui/create-board-dialog";
 import { ErrorSnackbar } from "@/shared/ui/components/error-snackbar";
 import { useActionFeedback } from "@/shared/lib/actions/use-action-feedback";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
+import type { BoardTemplate } from "@/features/boards/lib/board-templates";
 
 type BoardSummary = {
   id: string;
   title: string;
   ownerId: string;
-  owner: { name: string };
+  owner: { id: string; name: string };
+  members: { id: string; role: import("@/generated/prisma/client").BoardRole; user: { id: string; name: string; email: string } }[];
 };
 
 export function BoardList({
@@ -55,20 +57,23 @@ export function BoardList({
           }}
         >
           {boards.map((board) => (
-            <BoardCard key={board.id} board={board} isOwner={board.ownerId === currentUserId} />
+            <BoardCard
+              key={board.id}
+              board={board}
+              isOwner={board.ownerId === currentUserId}
+              currentUserId={currentUserId}
+            />
           ))}
         </Box>
       )}
 
-      <TitleDialog
+      <CreateBoardDialog
         open={createOpen}
-        dialogTitle={dict.boards.newBoard}
-        label={dict.boards.boardTitle}
         pending={isPending}
         onCloseAction={() => setCreateOpen(false)}
-        onSubmitAction={(title) => {
+        onSubmitAction={(title, template: BoardTemplate) => {
           setCreateOpen(false);
-          startTransition(() => run(() => createBoard({ title })));
+          startTransition(() => run(() => createBoard({ title, columns: template.columns })));
         }}
       />
 

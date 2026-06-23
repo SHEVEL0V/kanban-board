@@ -9,10 +9,26 @@ import { createBoardSchema } from "@/features/boards/schema/board-schema";
 export const createBoard = runAction({
   schema: createBoardSchema,
   revalidate: () => [CacheTags.boards()],
-  handler: async ({ title }, session) => {
-    const board = await prisma.board.create({
-      data: { title, ownerId: session.userId },
-      select: { id: true },
+  handler: async ({ title, columns = [] }, session) => {
+    const board = await prisma.$transaction(async (tx) => {
+      const created = await tx.board.create({
+        data: { title, ownerId: session.userId },
+        select: { id: true },
+      });
+
+      if (columns.length > 0) {
+        await tx.column.createMany({
+          data: columns.map((col) => ({
+            boardId: created.id,
+            title: col.title,
+            order: col.order,
+            wipLimit: col.wipLimit ?? null,
+            isCompletion: col.isCompletion ?? false,
+          })),
+        });
+      }
+
+      return created;
     });
 
     return ok(board);

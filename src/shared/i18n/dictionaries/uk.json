@@ -54,7 +54,29 @@
     "remove": "Видалити",
     "removeMemberConfirm": "Видалити «{name}» з дошки?",
     "sharedBy": "Власник: {name}",
-    "noMembers": "Інших учасників немає"
+    "noMembers": "Інших учасників немає",
+    "role": "Роль",
+    "roleEditor": "Редактор",
+    "roleViewer": "Перегляд",
+    "manageLabels": "Мітки",
+    "noLabels": "Міток ще немає",
+    "deleteLabelConfirm": "Видалити мітку «{title}»? Вона буде прибрана з усіх карток.",
+    "boardSettings": "Налаштування дошки",
+    "deleteBoard": "Видалити дошку",
+    "newBoardTemplate": "Оберіть шаблон",
+    "templateBlank": "Порожня",
+    "templateBlankDesc": "Почати з чистого аркуша",
+    "templateKanban": "Kanban",
+    "templateKanbanDesc": "До виконання → В роботі → Готово",
+    "templateScrum": "Scrum",
+    "templateScrumDesc": "Бекілог, Спринт, Ревью, Готово",
+    "templatePersonal": "Особиста",
+    "templatePersonalDesc": "Ідеї, Цього тижня, Сьогодні, Готово",
+    "archive": "Архів",
+    "archiveEmpty": "Архів порожній",
+    "completedBy": "Виконав: {name}",
+    "completionDays": "{days} д.",
+    "restoreTask": "Повернути з архіву"
   },
   "columns": {
     "newColumn": "Додати колонку",
@@ -62,7 +84,8 @@
     "deleteConfirm": "Видалити колонку «{title}» разом з картками?",
     "settingsTitle": "Налаштування колонки",
     "wipLimit": "WIP-ліміт",
-    "wipLimitHelper": "Залиште порожнім, якщо без обмежень"
+    "wipLimitHelper": "Залиште порожнім, якщо без обмежень",
+    "isCompletion": "Фінальна колонка"
   },
   "tasks": {
     "newTask": "Додати картку",
@@ -73,7 +96,21 @@
     "priorityLow": "Низький",
     "priorityMedium": "Середній",
     "priorityHigh": "Високий",
-    "dueDate": "Дедлайн"
+    "dueDate": "Дедлайн",
+    "assignee": "Виконавець",
+    "noAssignee": "Без виконавця",
+    "labels": "Мітки",
+    "newLabel": "Нова мітка",
+    "labelName": "Назва мітки",
+    "addLabel": "Додати мітку",
+    "checklist": "Чекліст",
+    "checklistAdd": "Додати пункт...",
+    "confirm": "Підтвердити"
+  },
+  "search": {
+    "placeholder": "Пошук задач...",
+    "noResults": "Задач не знайдено",
+    "hint": "⌘K"
   },
   "filters": {
     "searchPlaceholder": "Пошук задач...",
@@ -82,6 +119,8 @@
     "overdue": "Просрочені",
     "dueSoon": "Найближчі 7 днів",
     "noDueDate": "Без дедлайну",
+    "allAssignees": "Всі виконавці",
+    "allLabels": "Всі мітки",
     "clear": "Очистити фільтри",
     "noMatches": "Немає карток за фільтром"
   },
@@ -109,7 +148,11 @@
   },
   "notifications": {
     "title": "Сповіщення",
-    "empty": "Найближчих дедлайнів немає",
+    "empty": "Немає сповіщень",
+    "deadlines": "Дедлайни",
+    "pendingConfirmation": "Очікують підтвердження",
+    "completedBy": "Виконав: {name}",
+    "assignedToMe": "Призначено мені",
     "overdue": "Просрочено",
     "dueSoon": "Найближчим часом",
     "dueOn": "дедлайн {date}"

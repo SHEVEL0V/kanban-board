@@ -8,14 +8,17 @@ import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import { useDictionary } from "@/shared/i18n/dictionary-context";
 
-// Column title + optional WIP limit, edited together from the column header's edit icon.
+// Column title, WIP limit, and completion flag, edited from the column header.
 export function ColumnSettingsDialog({
   open,
   dialogTitle,
   defaultTitle = "",
   defaultWipLimit = null,
+  defaultIsCompletion = false,
   pending = false,
   onCloseAction,
   onSubmitAction,
@@ -24,28 +27,31 @@ export function ColumnSettingsDialog({
   dialogTitle: string;
   defaultTitle?: string;
   defaultWipLimit?: number | null;
+  defaultIsCompletion?: boolean;
   pending?: boolean;
   onCloseAction: () => void;
-  onSubmitAction: (title: string, wipLimit: number | null) => void;
+  onSubmitAction: (title: string, wipLimit: number | null, isCompletion: boolean) => void;
 }) {
   const { dict } = useDictionary();
   const [title, setTitle] = React.useState(defaultTitle);
   const [wipLimit, setWipLimit] = React.useState(defaultWipLimit?.toString() ?? "");
+  const [isCompletion, setIsCompletion] = React.useState(defaultIsCompletion);
 
-  // Reset the fields when the dialog opens, without an effect-driven re-render.
+  // Reset fields when the dialog opens, without an effect-driven re-render.
   const [prevOpen, setPrevOpen] = React.useState(open);
   if (open !== prevOpen) {
     setPrevOpen(open);
     if (open) {
       setTitle(defaultTitle);
       setWipLimit(defaultWipLimit?.toString() ?? "");
+      setIsCompletion(defaultIsCompletion);
     }
   }
 
   const submit = () => {
     const trimmed = title.trim();
     if (!trimmed) return;
-    onSubmitAction(trimmed, wipLimit.trim() === "" ? null : Number(wipLimit));
+    onSubmitAction(trimmed, wipLimit.trim() === "" ? null : Number(wipLimit), isCompletion);
   };
 
   return (
@@ -68,6 +74,15 @@ export function ColumnSettingsDialog({
             value={wipLimit}
             onChange={(event) => setWipLimit(event.target.value)}
             slotProps={{ htmlInput: { min: 1 } }}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isCompletion}
+                onChange={(e) => setIsCompletion(e.target.checked)}
+              />
+            }
+            label={dict.columns.isCompletion}
           />
         </Stack>
       </DialogContent>
